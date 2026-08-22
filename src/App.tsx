@@ -434,6 +434,7 @@ export default function App() {
       <MiniMap
         terminals={terminalsToRender}
         camera={camera}
+        physics={physics}
         onJumpTo={handleJumpTo}
       />
 

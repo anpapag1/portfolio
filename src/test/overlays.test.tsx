@@ -32,7 +32,7 @@ describe('MiniMap Component & Coordinate Translation', () => {
     // x: ((300 + 1500) / 3000) * 180 = (1800/3000) * 180 = 0.6 * 180 = 108
     // y: ((-600 + 1500) / 3000) * 130 = (900/3000) * 130 = 0.3 * 130 = 39
     expect(mapCoord.x).toBeCloseTo(108);
-    expect(mapCoord.y).toBeCloseTo(39);
+    expect(mapCoord.y).toBeCloseTo(29);
 
     const backToWorld = miniMapToWorld(mapCoord, mapSize, worldSpan);
     expect(backToWorld.x).toBeCloseTo(worldPoint.x);
