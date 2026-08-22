@@ -7,7 +7,7 @@ import { MiniMap } from './ui/MiniMap';
 import { HelpOverlay } from './ui/HelpOverlay';
 import { loadContent } from './utils/content';
 import { PortfolioContent } from './types/content';
-import { Map as MapIcon, HelpCircle, RotateCcw, X } from 'lucide-react';
+import { Map as MapIcon, HelpCircle, RotateCcw, Maximize2, X } from 'lucide-react';
 
 export default function App() {
   const [content, setContent] = useState<PortfolioContent | null>(null);
@@ -36,7 +36,7 @@ export default function App() {
   const hasUserNavigated = useRef(false);
 
   // Helper to compute bounding box of all terminals and fit camera to view
-  const fitAllTerminals = useCallback(() => {
+  const fitAllTerminals = useCallback((padding = 130) => {
     if (!content || content.terminals.length === 0) return;
     let minX = Infinity;
     let minY = Infinity;
@@ -56,7 +56,7 @@ export default function App() {
     }
 
     if (isFinite(minX) && isFinite(maxX)) {
-      camera.fitToBounds({ minX, minY, maxX, maxY }, 100);
+      camera.fitToBounds({ minX, minY, maxX, maxY }, padding);
     }
   }, [camera, content, physics]);
 
@@ -132,6 +132,9 @@ export default function App() {
         setIsMobileMapOpen(false);
       } else if (e.key === '0') {
         handleResetLayout();
+      } else if (e.key.toLowerCase() === 'f') {
+        hasUserNavigated.current = false;
+        fitAllTerminals(130);
       } else if (e.key === '+' || e.key === '=') {
         hasUserNavigated.current = true;
         camera.setZoom(camera.zoom * 1.15);
@@ -154,7 +157,7 @@ export default function App() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [camera, handleResetLayout]);
+  }, [camera, fitAllTerminals, handleResetLayout]);
 
   // Non-passive wheel event listener for ultra-smooth Trackpad 2-finger pan & pinch zoom
   useEffect(() => {
@@ -191,12 +194,19 @@ export default function App() {
   useEffect(() => {
     let animId: number;
     let lastTime = performance.now();
+    let frameCount = 0;
 
     const loop = (currentTime: number) => {
       const dt = Math.min((currentTime - lastTime) / 1000, 0.1);
       lastTime = currentTime;
 
       physics.update(dt || 1 / 60);
+
+      // Continuously auto-frame settling nodes during initial load if user hasn't navigated
+      if (!hasUserNavigated.current && frameCount < 240 && frameCount % 2 === 0) {
+        fitAllTerminals(130);
+      }
+      frameCount++;
 
       const canvas = canvasRef.current;
       if (canvas) {
@@ -214,7 +224,7 @@ export default function App() {
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [camera, dotGrid, physics]);
+  }, [camera, dotGrid, fitAllTerminals, physics]);
 
   // Resize canvas and camera viewport on window resize
   useEffect(() => {
@@ -432,6 +442,20 @@ export default function App() {
         aria-label="Floating Controls"
         className="absolute bottom-4 right-4 flex items-center space-x-2 z-40"
       >
+        <button
+          type="button"
+          data-testid="fit-view-btn"
+          onClick={() => {
+            hasUserNavigated.current = false;
+            fitAllTerminals(130);
+          }}
+          className="hidden sm:flex items-center justify-center w-9 h-9 bg-[#0f0f0f]/90 border border-white/15 rounded-full text-muted hover:text-accent shadow-lg backdrop-blur-md transition-colors"
+          title="Fit All Terminals to View (F)"
+          aria-label="Fit All Terminals to View"
+        >
+          <Maximize2 size={15} />
+        </button>
+
         <button
           type="button"
           data-testid="reset-cam-btn"
