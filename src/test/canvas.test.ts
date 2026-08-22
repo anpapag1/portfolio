@@ -102,6 +102,25 @@ describe('Camera & Coordinate Transformations', () => {
     expect(bounds.maxY).toBe(400);
   });
 
+  it('calculates optimal zoom and center position in fitToBounds', () => {
+    const camera = new Camera({ x: 0, y: 0 }, 1.0, { width: 1000, height: 800 });
+    const bounds = { minX: -500, minY: -300, maxX: 500, maxY: 300 }; // 1000 x 600
+
+    camera.fitToBounds(bounds, 50); // with padding: 1100 x 700
+    // center should be (0, 0)
+    expect(camera.position.x).toBe(0);
+    expect(camera.position.y).toBe(0);
+    // zoom should fit 1100 into 1000 -> ~0.909, and 700 into 800 -> ~1.14 -> min is ~0.909
+    expect(camera.zoom).toBeCloseTo(1000 / 1100, 2);
+  });
+
+  it('does not over-zoom beyond 1.0 in fitToBounds for small content', () => {
+    const camera = new Camera({ x: 0, y: 0 }, 1.0, { width: 1920, height: 1080 });
+    const smallBounds = { minX: -50, minY: -50, maxX: 50, maxY: 50 }; // 100x100
+    camera.fitToBounds(smallBounds, 20);
+    expect(camera.zoom).toBe(1.0);
+  });
+
   it('updates viewport size correctly via setViewport', () => {
     const camera = new Camera({ x: 0, y: 0 }, 1.0, { width: 800, height: 600 });
     camera.setViewport(1920, 1080);

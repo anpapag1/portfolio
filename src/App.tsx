@@ -29,24 +29,72 @@ export default function App() {
   const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map());
   const initialPinchDistance = useRef<number | null>(null);
   const initialPinchZoom = useRef<number>(1.0);
+  const hasUserNavigated = useRef(false);
 
-  // Load content and dynamically synchronize physics particles
+  // Helper to compute bounding box of all terminals and fit camera to view
+  const fitAllTerminals = useCallback(() => {
+    if (!content || content.terminals.length === 0) return;
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    for (const t of content.terminals) {
+      const p = physics.getParticle(t.id);
+      const pos = p ? p.position : t.position;
+      const w = t.size.width || 400;
+      const h = t.size.height || 260;
+
+      minX = Math.min(minX, pos.x);
+      minY = Math.min(minY, pos.y);
+      maxX = Math.max(maxX, pos.x + w);
+      maxY = Math.max(maxY, pos.y + h);
+    }
+
+    if (isFinite(minX) && isFinite(maxX)) {
+      camera.fitToBounds({ minX, minY, maxX, maxY }, 100);
+    }
+  }, [camera, content, physics]);
+
+  // Load content, dynamically synchronize physics particles, and auto-fit viewport
   useEffect(() => {
     let isMounted = true;
     loadContent().then((data) => {
       if (!isMounted) return;
       setContent(data);
       physics.syncParticles(data.terminals);
+
+      if (!hasUserNavigated.current) {
+        let minX = Infinity;
+        let minY = Infinity;
+        let maxX = -Infinity;
+        let maxY = -Infinity;
+
+        data.terminals.forEach((t) => {
+          const p = physics.getParticle(t.id);
+          const pos = p ? p.position : t.position;
+          const w = t.size.width || 400;
+          const h = t.size.height || 260;
+
+          minX = Math.min(minX, pos.x);
+          minY = Math.min(minY, pos.y);
+          maxX = Math.max(maxX, pos.x + w);
+          maxY = Math.max(maxY, pos.y + h);
+        });
+
+        if (isFinite(minX) && isFinite(maxX)) {
+          camera.fitToBounds({ minX, minY, maxX, maxY }, 100);
+        }
+      }
     });
     return () => {
       isMounted = false;
     };
-  }, [physics]);
+  }, [camera, physics]);
 
-  // Reset camera & positions
+  // Reset camera, positions & fit to view
   const handleResetLayout = useCallback(() => {
-    camera.position = { x: 0, y: 0 };
-    camera.setZoom(1.0);
+    hasUserNavigated.current = false;
     if (content) {
       content.terminals.forEach((t) => {
         try {
@@ -59,7 +107,8 @@ export default function App() {
       });
       physics.resetBonds();
     }
-  }, [camera, content, physics]);
+    fitAllTerminals();
+  }, [content, fitAllTerminals, physics]);
 
   // Global keyboard shortcuts
   useEffect(() => {
@@ -73,8 +122,10 @@ export default function App() {
       } else if (e.key === '0') {
         handleResetLayout();
       } else if (e.key === '+' || e.key === '=') {
+        hasUserNavigated.current = true;
         camera.setZoom(camera.zoom * 1.15);
       } else if (e.key === '-' || e.key === '_') {
+        hasUserNavigated.current = true;
         camera.setZoom(camera.zoom * 0.85);
       }
     };
@@ -123,12 +174,15 @@ export default function App() {
         canvasRef.current.height = height;
       }
       camera.setViewport(width, height);
+      if (!hasUserNavigated.current) {
+        fitAllTerminals();
+      }
     };
 
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [camera]);
+  }, [camera, fitAllTerminals]);
 
   // Pointer interactions for Canvas pan & pinch zoom
   const handlePointerDown = (e: PointerEvent) => {
@@ -140,6 +194,7 @@ export default function App() {
         isDraggingCanvas.current = true;
         dragStartPoint.current = { x: e.clientX, y: e.clientY };
       } else if (activePointers.current.size === 2) {
+        hasUserNavigated.current = true;
         const points = Array.from(activePointers.current.values());
         const dx = points[0].x - points[1].x;
         const dy = points[0].y - points[1].y;
@@ -155,6 +210,7 @@ export default function App() {
     }
 
     if (draggedParticleId.current) {
+      hasUserNavigated.current = true;
       const worldPos = camera.screenToWorld({ x: e.clientX, y: e.clientY });
       physics.setPosition(draggedParticleId.current, worldPos);
       try {
@@ -166,6 +222,7 @@ export default function App() {
         // ignore write error
       }
     } else if (activePointers.current.size === 2 && initialPinchDistance.current !== null) {
+      hasUserNavigated.current = true;
       const points = Array.from(activePointers.current.values());
       const dx = points[0].x - points[1].x;
       const dy = points[0].y - points[1].y;
@@ -180,6 +237,7 @@ export default function App() {
         camera.zoomAt(center, (targetZoom - camera.zoom) / camera.zoom);
       }
     } else if (isDraggingCanvas.current) {
+      hasUserNavigated.current = true;
       const dx = e.clientX - dragStartPoint.current.x;
       const dy = e.clientY - dragStartPoint.current.y;
       camera.pan(dx, dy);
@@ -205,12 +263,14 @@ export default function App() {
   };
 
   const handleWheel = (e: WheelEvent) => {
+    hasUserNavigated.current = true;
     const delta = -e.deltaY * 0.001;
     camera.zoomAt({ x: e.clientX, y: e.clientY }, delta);
   };
 
   const handleTerminalDragStart = (id: string, e: PointerEvent) => {
     e.stopPropagation();
+    hasUserNavigated.current = true;
     draggedParticleId.current = id;
     physics.pin(id);
     setFocusedTerminalId(id);
@@ -219,6 +279,7 @@ export default function App() {
   const terminalsToRender = content?.terminals || [];
 
   const handleJumpTo = (x: number, y: number) => {
+    hasUserNavigated.current = true;
     camera.position = { x, y };
   };
 

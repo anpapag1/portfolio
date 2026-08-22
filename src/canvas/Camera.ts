@@ -66,4 +66,23 @@ export class Camera {
       maxY: Math.max(topLeft.y, bottomRight.y),
     };
   }
+
+  /**
+   * Adjusts camera zoom and center position so all content within `bounds`
+   * is fully visible within the viewport with optional padding.
+   */
+  public fitToBounds(bounds: Bounds, padding = 80) {
+    const contentWidth = Math.max(100, bounds.maxX - bounds.minX + padding * 2);
+    const contentHeight = Math.max(100, bounds.maxY - bounds.minY + padding * 2);
+
+    const zoomX = this.viewport.width / contentWidth;
+    const zoomY = this.viewport.height / contentHeight;
+    const optimalZoom = Math.min(zoomX, zoomY, 1.0);
+
+    this.setZoom(optimalZoom);
+    this.position = {
+      x: (bounds.minX + bounds.maxX) / 2,
+      y: (bounds.minY + bounds.maxY) / 2,
+    };
+  }
 }
