@@ -135,13 +135,13 @@ describe('App Integration Suite', () => {
 
   it('reads saved terminal positions from localStorage', async () => {
     localStorage.setItem(
-      'portfolio:pos:profile',
+      'portfolio:v2:pos:profile',
       JSON.stringify({ x: -100, y: -200 })
     );
 
     await renderAndAwaitLoad();
 
-    expect(localStorage.getItem('portfolio:pos:profile')).toBe(
+    expect(localStorage.getItem('portfolio:v2:pos:profile')).toBe(
       JSON.stringify({ x: -100, y: -200 })
     );
   });

@@ -18,7 +18,7 @@ export interface MiniMapProps {
 export function worldToMiniMap(
   world: { x: number; y: number },
   mapSize = { width: 180, height: 130 },
-  worldSpan = 4800
+  worldSpan = 3400
 ) {
   const worldSpanY = worldSpan * (mapSize.height / mapSize.width);
   return {
@@ -30,7 +30,7 @@ export function worldToMiniMap(
 export function miniMapToWorld(
   mapPos: { x: number; y: number },
   mapSize = { width: 180, height: 130 },
-  worldSpan = 4800
+  worldSpan = 3400
 ) {
   const worldSpanY = worldSpan * (mapSize.height / mapSize.width);
   return {
@@ -47,7 +47,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({
   className,
   width = 180,
   height = 130,
-  worldSpan = 4800,
+  worldSpan = 3400,
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();

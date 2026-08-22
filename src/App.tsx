@@ -103,6 +103,7 @@ export default function App() {
       content.terminals.forEach((t) => {
         try {
           localStorage.removeItem(`portfolio:pos:${t.id}`);
+          localStorage.removeItem(`portfolio:v2:pos:${t.id}`);
         } catch {
           // ignore
         }
@@ -111,8 +112,9 @@ export default function App() {
       });
       physics.resetBonds();
     }
-    fitAllTerminals();
-  }, [content, fitAllTerminals, physics]);
+    camera.position = { x: 0, y: 0 };
+    fitAllTerminals(130);
+  }, [camera, content, fitAllTerminals, physics]);
 
   // Global keyboard shortcuts (including Spacebar Hand Tool)
   useEffect(() => {

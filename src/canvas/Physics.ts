@@ -64,7 +64,9 @@ export class PhysicsEngine {
         let pos = t.position;
         if (typeof window !== 'undefined') {
           try {
-            const saved = localStorage.getItem(`portfolio:pos:${t.id}`);
+            // Clean up legacy v1 keys if present
+            localStorage.removeItem(`portfolio:pos:${t.id}`);
+            const saved = localStorage.getItem(`portfolio:v2:pos:${t.id}`);
             if (saved) pos = JSON.parse(saved);
           } catch {
             // fallback
