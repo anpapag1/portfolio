@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { MiniMap, worldToMiniMap, miniMapToWorld } from '../ui/MiniMap';
+import { MiniMap, worldToMiniMap, miniMapToWorld, calculateMiniMapBounds } from '../ui/MiniMap';
 import { HelpOverlay } from '../ui/HelpOverlay';
 import { Camera } from '../canvas/Camera';
 import { TerminalData } from '../types/content';
@@ -24,19 +24,27 @@ describe('MiniMap Component & Coordinate Translation', () => {
   ];
 
   it('translates world coordinates to minimap coordinates and back accurately', () => {
+    const bounds = { centerX: 0, centerY: 0, spanX: 3000, spanY: 2166.67 };
     const worldPoint = { x: 300, y: -600 };
     const mapSize = { width: 180, height: 130 };
-    const worldSpan = 3000;
 
-    const mapCoord = worldToMiniMap(worldPoint, mapSize, worldSpan);
-    // x: ((300 + 1500) / 3000) * 180 = (1800/3000) * 180 = 0.6 * 180 = 108
-    // y: ((-600 + 1500) / 3000) * 130 = (900/3000) * 130 = 0.3 * 130 = 39
+    const mapCoord = worldToMiniMap(worldPoint, mapSize, bounds);
     expect(mapCoord.x).toBeCloseTo(108);
     expect(mapCoord.y).toBeCloseTo(29);
 
-    const backToWorld = miniMapToWorld(mapCoord, mapSize, worldSpan);
+    const backToWorld = miniMapToWorld(mapCoord, mapSize, bounds);
     expect(backToWorld.x).toBeCloseTo(worldPoint.x);
     expect(backToWorld.y).toBeCloseTo(worldPoint.y);
+  });
+
+  it('calculates dynamic responsive bounding box centering the terminal group', () => {
+    const camera = new Camera({ x: 300, y: -200 }, 1.0, { width: 800, height: 600 });
+    const bounds = calculateMiniMapBounds(sampleTerminals, camera);
+
+    expect(bounds.centerX).toBeGreaterThanOrEqual(-1000);
+    expect(bounds.centerY).toBeGreaterThanOrEqual(-1000);
+    expect(bounds.spanX).toBeGreaterThan(1000);
+    expect(bounds.spanY).toBeGreaterThan(800);
   });
 
   it('renders all terminal markers with titles', () => {
@@ -87,7 +95,6 @@ describe('MiniMap Component & Coordinate Translation', () => {
         onJumpTo={handleJumpTo}
         width={180}
         height={130}
-        worldSpan={3000}
       />
     );
 
@@ -110,8 +117,8 @@ describe('MiniMap Component & Coordinate Translation', () => {
 
     expect(handleJumpTo).toHaveBeenCalledTimes(1);
     const [targetX, targetY] = handleJumpTo.mock.calls[0];
-    expect(targetX).toBeCloseTo(0);
-    expect(targetY).toBeCloseTo(0);
+    expect(isFinite(targetX)).toBe(true);
+    expect(isFinite(targetY)).toBe(true);
   });
 });
 

@@ -4,6 +4,13 @@ import { Camera } from '../canvas/Camera';
 import { PhysicsEngine } from '../canvas/Physics';
 import { cn } from '../utils/cn';
 
+export interface MiniMapBounds {
+  centerX: number;
+  centerY: number;
+  spanX: number;
+  spanY: number;
+}
+
 export interface MiniMapProps {
   terminals: TerminalData[];
   camera: Camera;
@@ -12,30 +19,92 @@ export interface MiniMapProps {
   className?: string;
   width?: number;
   height?: number;
-  worldSpan?: number;
+}
+
+/**
+ * Dynamically computes bounding area for the minimap so that all terminal nodes
+ * AND the camera viewport remain comfortably visible and centered.
+ */
+export function calculateMiniMapBounds(
+  terminals: TerminalData[],
+  camera?: Camera,
+  physics?: PhysicsEngine,
+  mapSize = { width: 180, height: 130 }
+): MiniMapBounds {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  // 1. Include all terminal node cards (at live positions)
+  if (terminals.length > 0) {
+    for (const t of terminals) {
+      const p = physics?.getParticle(t.id);
+      const pos = p ? p.position : t.position;
+      const w = t.size.width || 400;
+      const h = t.size.height || 260;
+
+      minX = Math.min(minX, pos.x);
+      minY = Math.min(minY, pos.y);
+      maxX = Math.max(maxX, pos.x + w);
+      maxY = Math.max(maxY, pos.y + h);
+    }
+  } else {
+    minX = -1000;
+    maxX = 1000;
+    minY = -750;
+    maxY = 750;
+  }
+
+  // 2. Include visible camera viewport bounds
+  if (camera) {
+    const camTL = camera.screenToWorld({ x: 0, y: 0 });
+    const camBR = camera.screenToWorld({ x: camera.viewport.width, y: camera.viewport.height });
+    minX = Math.min(minX, camTL.x, camBR.x);
+    maxX = Math.max(maxX, camTL.x, camBR.x);
+    minY = Math.min(minY, camTL.y, camBR.y);
+    maxY = Math.max(maxY, camTL.y, camBR.y);
+  }
+
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+
+  // Add generous safety padding so cards never touch the minimap border
+  const contentWidth = Math.max(1600, maxX - minX + 500);
+  const contentHeight = Math.max(1200, maxY - minY + 400);
+
+  const aspect = mapSize.width / mapSize.height;
+  let spanX = contentWidth;
+  let spanY = contentHeight;
+
+  if (spanX / spanY > aspect) {
+    spanY = spanX / aspect;
+  } else {
+    spanX = spanY * aspect;
+  }
+
+  return { centerX, centerY, spanX, spanY };
 }
 
 export function worldToMiniMap(
   world: { x: number; y: number },
   mapSize = { width: 180, height: 130 },
-  worldSpan = 3400
+  bounds: MiniMapBounds = { centerX: 0, centerY: 0, spanX: 3400, spanY: 2455.5 }
 ) {
-  const worldSpanY = worldSpan * (mapSize.height / mapSize.width);
   return {
-    x: ((world.x + worldSpan / 2) / worldSpan) * mapSize.width,
-    y: ((world.y + worldSpanY / 2) / worldSpanY) * mapSize.height,
+    x: ((world.x - bounds.centerX) / bounds.spanX + 0.5) * mapSize.width,
+    y: ((world.y - bounds.centerY) / bounds.spanY + 0.5) * mapSize.height,
   };
 }
 
 export function miniMapToWorld(
   mapPos: { x: number; y: number },
   mapSize = { width: 180, height: 130 },
-  worldSpan = 3400
+  bounds: MiniMapBounds = { centerX: 0, centerY: 0, spanX: 3400, spanY: 2455.5 }
 ) {
-  const worldSpanY = worldSpan * (mapSize.height / mapSize.width);
   return {
-    x: (mapPos.x / mapSize.width) * worldSpan - worldSpan / 2,
-    y: (mapPos.y / mapSize.height) * worldSpanY - worldSpanY / 2,
+    x: (mapPos.x / mapSize.width - 0.5) * bounds.spanX + bounds.centerX,
+    y: (mapPos.y / mapSize.height - 0.5) * bounds.spanY + bounds.centerY,
   };
 }
 
@@ -47,14 +116,16 @@ export const MiniMap: React.FC<MiniMapProps> = ({
   className,
   width = 180,
   height = 130,
-  worldSpan = 3400,
 }) => {
+  // Compute dynamic responsive bounds centered on active nodes and viewport
+  const bounds = calculateMiniMapBounds(terminals, camera, physics, { width, height });
+
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    const target = miniMapToWorld({ x: clickX, y: clickY }, { width, height }, worldSpan);
+    const target = miniMapToWorld({ x: clickX, y: clickY }, { width, height }, bounds);
     onJumpTo(target.x, target.y);
   };
 
@@ -65,8 +136,8 @@ export const MiniMap: React.FC<MiniMapProps> = ({
     y: camera.viewport.height,
   });
 
-  const mapTopLeft = worldToMiniMap(worldTopLeft, { width, height }, worldSpan);
-  const mapBottomRight = worldToMiniMap(worldBottomRight, { width, height }, worldSpan);
+  const mapTopLeft = worldToMiniMap(worldTopLeft, { width, height }, bounds);
+  const mapBottomRight = worldToMiniMap(worldBottomRight, { width, height }, bounds);
 
   const viewLeft = Math.min(mapTopLeft.x, mapBottomRight.x);
   const viewTop = Math.min(mapTopLeft.y, mapBottomRight.y);
@@ -87,7 +158,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({
         className
       )}
     >
-      {/* Grid crosshair center lines */}
+      {/* Dynamic grid crosshair center lines */}
       <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
         <div className="w-full h-px bg-white" />
         <div className="h-full w-px bg-white absolute" />
@@ -103,12 +174,12 @@ export const MiniMap: React.FC<MiniMapProps> = ({
           const pt1 = worldToMiniMap(
             { x: p1.x + 190, y: p1.y + 130 },
             { width, height },
-            worldSpan
+            bounds
           );
           const pt2 = worldToMiniMap(
             { x: p2.x + 190, y: p2.y + 130 },
             { width, height },
-            worldSpan
+            bounds
           );
 
           if (!isFinite(pt1.x) || !isFinite(pt2.x)) return null;
@@ -132,11 +203,11 @@ export const MiniMap: React.FC<MiniMapProps> = ({
       {terminals.map((t) => {
         const particle = physics?.getParticle(t.id);
         const pos = particle ? particle.position : t.position;
-        const tl = worldToMiniMap(pos, { width, height }, worldSpan);
+        const tl = worldToMiniMap(pos, { width, height }, bounds);
         const br = worldToMiniMap(
           { x: pos.x + t.size.width, y: pos.y + t.size.height },
           { width, height },
-          worldSpan
+          bounds
         );
 
         const nodeW = Math.max(6, br.x - tl.x);
