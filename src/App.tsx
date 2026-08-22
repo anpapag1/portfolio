@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, type PointerEvent, type WheelEvent } from 'react';
+import { useState, useEffect, useRef, useCallback, type PointerEvent } from 'react';
 import { Camera } from './canvas/Camera';
 import { DotGrid } from './canvas/DotGrid';
 import { PhysicsEngine } from './canvas/Physics';
@@ -22,8 +22,12 @@ export default function App() {
   const [focusedTerminalId, setFocusedTerminalId] = useState<string | null>(null);
   const [, setRenderTick] = useState(0);
 
+  const [isSpaceActive, setIsSpaceActive] = useState(false);
+
+  const rootRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDraggingCanvas = useRef(false);
+  const isSpacePressed = useRef(false);
   const dragStartPoint = useRef({ x: 0, y: 0 });
   const draggedParticleId = useRef<string | null>(null);
   const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map());
@@ -110,10 +114,17 @@ export default function App() {
     fitAllTerminals();
   }, [content, fitAllTerminals, physics]);
 
-  // Global keyboard shortcuts
+  // Global keyboard shortcuts (including Spacebar Hand Tool)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '?') {
+      const target = e.target as HTMLElement;
+      if (['INPUT', 'TEXTAREA'].includes(target.tagName)) return;
+
+      if (e.code === 'Space' && !e.repeat) {
+        e.preventDefault();
+        isSpacePressed.current = true;
+        setIsSpaceActive(true);
+      } else if (e.key === '?') {
         e.preventDefault();
         setIsHelpOpen((prev) => !prev);
       } else if (e.key === 'Escape') {
@@ -130,9 +141,51 @@ export default function App() {
       }
     };
 
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        isSpacePressed.current = false;
+        setIsSpaceActive(false);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
   }, [camera, handleResetLayout]);
+
+  // Non-passive wheel event listener for ultra-smooth Trackpad 2-finger pan & pinch zoom
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const onWheelNative = (e: globalThis.WheelEvent) => {
+      e.preventDefault();
+      hasUserNavigated.current = true;
+
+      const cursor = { x: e.clientX, y: e.clientY };
+
+      // 1. Trackpad Pinch-to-Zoom OR Ctrl/Cmd + Mouse Wheel
+      if (e.ctrlKey || e.metaKey) {
+        const zoomDelta = -e.deltaY * 0.01;
+        camera.zoomAt(cursor, zoomDelta);
+      }
+      // 2. Discrete physical mouse wheel scroll
+      else if (e.deltaMode !== 0 || (Math.abs(e.deltaX) === 0 && Math.abs(e.deltaY) >= 40)) {
+        const zoomDelta = -Math.sign(e.deltaY) * 0.12;
+        camera.zoomAt(cursor, zoomDelta);
+      }
+      // 3. Trackpad 2-Finger Smooth Panning (continuous pixel deltas)
+      else {
+        camera.pan(e.deltaX, e.deltaY);
+      }
+    };
+
+    root.addEventListener('wheel', onWheelNative, { passive: false });
+    return () => root.removeEventListener('wheel', onWheelNative);
+  }, [camera]);
 
   // Main Canvas & Physics animation loop synced with rAF
   useEffect(() => {
@@ -184,13 +237,16 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, [camera, fitAllTerminals]);
 
-  // Pointer interactions for Canvas pan & pinch zoom
+  // Pointer interactions for Canvas pan, pinch zoom & middle-click
   const handlePointerDown = (e: PointerEvent) => {
     activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
     const target = e.target as HTMLElement;
-    if (target.tagName === 'CANVAS' || target.dataset.canvasBackground === 'true') {
-      if (activePointers.current.size === 1) {
+    const isMiddleClick = e.button === 1;
+    const isCanvasBg = target.tagName === 'CANVAS' || target.dataset.canvasBackground === 'true';
+
+    if (isMiddleClick || isSpacePressed.current || isCanvasBg) {
+      if (activePointers.current.size === 1 || isMiddleClick || isSpacePressed.current) {
         isDraggingCanvas.current = true;
         dragStartPoint.current = { x: e.clientX, y: e.clientY };
       } else if (activePointers.current.size === 2) {
@@ -262,13 +318,10 @@ export default function App() {
     }
   };
 
-  const handleWheel = (e: WheelEvent) => {
-    hasUserNavigated.current = true;
-    const delta = -e.deltaY * 0.001;
-    camera.zoomAt({ x: e.clientX, y: e.clientY }, delta);
-  };
-
   const handleTerminalDragStart = (id: string, e: PointerEvent) => {
+    if (isSpacePressed.current || e.button === 1) {
+      return; // allow spacebar/middle-click pan over terminals
+    }
     e.stopPropagation();
     hasUserNavigated.current = true;
     draggedParticleId.current = id;
@@ -293,20 +346,24 @@ export default function App() {
 
   return (
     <main
+      ref={rootRef}
       data-testid="app-root"
       data-canvas-background="true"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      onWheel={handleWheel}
-      className="relative w-screen h-screen overflow-hidden bg-bg select-none touch-none"
+      className={`relative w-screen h-screen overflow-hidden bg-bg select-none touch-none ${
+        isSpaceActive ? 'cursor-grab active:cursor-grabbing' : ''
+      }`}
     >
       {/* HTML5 Canvas Grid & Spring Mesh Layer */}
       <canvas
         ref={canvasRef}
         data-testid="canvas-element"
-        className="absolute inset-0 block w-full h-full cursor-grab active:cursor-grabbing"
+        className={`absolute inset-0 block w-full h-full ${
+          isSpaceActive ? 'cursor-grab active:cursor-grabbing' : 'cursor-grab active:cursor-grabbing'
+        }`}
       />
 
       {/* Floating Terminals Layer (Desktop Canvas Mode - sm and up) */}

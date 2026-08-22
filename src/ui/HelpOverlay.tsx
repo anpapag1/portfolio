@@ -26,11 +26,12 @@ export const HelpOverlay: React.FC<HelpOverlayProps> = ({ isOpen, onClose, class
   if (!isOpen) return null;
 
   const shortcuts = [
-    { key: 'Drag / Touch', desc: 'Pan infinite canvas' },
-    { key: 'Mouse Wheel / Pinch', desc: 'Zoom in and out' },
+    { key: '2-Finger Swipe / Drag', desc: 'Pan infinite canvas' },
+    { key: 'Pinch / Wheel / Ctrl+Scroll', desc: 'Zoom at cursor' },
+    { key: 'Space + Drag / Middle Click', desc: 'Hand tool canvas pan' },
     { key: 'Tab / Shift+Tab', desc: 'Focus through terminals' },
     { key: '+ / -', desc: 'Zoom in / Zoom out' },
-    { key: '0', desc: 'Reset camera position' },
+    { key: '0', desc: 'Reset & fit all terminals' },
     { key: 'Click Header', desc: 'Drag terminal node' },
     { key: 'Click Body', desc: 'Instantly finish typewriter' },
     { key: '?', desc: 'Toggle keyboard shortcuts' },

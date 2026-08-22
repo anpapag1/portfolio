@@ -131,7 +131,7 @@ describe('HelpOverlay Component', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText(/Canvas Controls & Shortcuts/i)).toBeInTheDocument();
     expect(screen.getByText('Pan infinite canvas')).toBeInTheDocument();
-    expect(screen.getByText('Zoom in and out')).toBeInTheDocument();
+    expect(screen.getByText('Zoom at cursor')).toBeInTheDocument();
     expect(screen.getByText('Focus through terminals')).toBeInTheDocument();
     expect(screen.getByText('Toggle keyboard shortcuts')).toBeInTheDocument();
   });
