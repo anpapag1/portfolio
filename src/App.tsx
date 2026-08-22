@@ -7,7 +7,6 @@ import { MiniMap } from './ui/MiniMap';
 import { HelpOverlay } from './ui/HelpOverlay';
 import { loadContent } from './utils/content';
 import { PortfolioContent } from './types/content';
-import { useKonamiCode } from './hooks/useKonamiCode';
 import { Map as MapIcon, HelpCircle, RotateCcw, X } from 'lucide-react';
 
 export default function App() {
@@ -20,7 +19,6 @@ export default function App() {
   const [physics] = useState(() => new PhysicsEngine());
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isMobileMapOpen, setIsMobileMapOpen] = useState(false);
-  const [isSecretUnlocked, setIsSecretUnlocked] = useState(false);
   const [focusedTerminalId, setFocusedTerminalId] = useState<string | null>(null);
   const [, setRenderTick] = useState(0);
 
@@ -32,33 +30,18 @@ export default function App() {
   const initialPinchDistance = useRef<number | null>(null);
   const initialPinchZoom = useRef<number>(1.0);
 
-  // Load content and initialize physics particles from content / localStorage
+  // Load content and dynamically synchronize physics particles
   useEffect(() => {
     let isMounted = true;
     loadContent().then((data) => {
       if (!isMounted) return;
       setContent(data);
-      data.terminals.forEach((t) => {
-        try {
-          const saved = localStorage.getItem(`portfolio:pos:${t.id}`);
-          const pos = saved ? JSON.parse(saved) : t.position;
-          physics.addParticle(t.id, pos);
-        } catch {
-          physics.addParticle(t.id, t.position);
-        }
-      });
+      physics.syncParticles(data.terminals);
     });
     return () => {
       isMounted = false;
     };
   }, [physics]);
-
-  // Unlock secret terminal via Konami code
-  useKonamiCode(() => {
-    setIsSecretUnlocked(true);
-    camera.position = { x: 2000, y: 2000 };
-    camera.setZoom(1.0);
-  });
 
   // Reset camera & positions
   const handleResetLayout = useCallback(() => {
@@ -232,9 +215,7 @@ export default function App() {
     setFocusedTerminalId(id);
   };
 
-  const terminalsToRender = (content?.terminals || []).filter(
-    (t) => t.id !== 'secret' || isSecretUnlocked
-  );
+  const terminalsToRender = content?.terminals || [];
 
   const handleJumpTo = (x: number, y: number) => {
     camera.position = { x, y };

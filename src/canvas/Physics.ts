@@ -1,4 +1,5 @@
 import { Vector2 } from './types';
+import { TerminalData } from '../types/content';
 
 export interface Particle {
   id: string;
@@ -11,12 +12,14 @@ export interface Particle {
 
 export class PhysicsEngine {
   private particles: Map<string, Particle> = new Map();
-  public restLength = 650;
-  public springK = 0.003;
-  public repulsionK = 250000;
-  public centerAttractionK = 0.00005;
+  public restLength = 620;
+  public springK = 0.006;
+  public repulsionK = 300000;
+  public centerAttractionK = 0.00004;
   public damping = 0.94;
   public minSeparation = 560;
+  public maxNeighborsPerNode = 2; // Each node dynamically connects to its closest 2 neighbors
+  public maxConnectionDistance = 900; // Max connection span
 
   public addParticle(id: string, position: Vector2, mass = 1.0) {
     this.particles.set(id, {
@@ -27,6 +30,37 @@ export class PhysicsEngine {
       pinned: false,
       mass,
     });
+  }
+
+  public removeParticle(id: string) {
+    this.particles.delete(id);
+  }
+
+  public syncParticles(terminals: TerminalData[]) {
+    const currentIds = new Set(terminals.map((t) => t.id));
+
+    // Remove any particles not present in the current terminal list
+    for (const id of Array.from(this.particles.keys())) {
+      if (!currentIds.has(id)) {
+        this.removeParticle(id);
+      }
+    }
+
+    // Add or update particles for terminals
+    for (const t of terminals) {
+      if (!this.particles.has(t.id)) {
+        let pos = t.position;
+        if (typeof window !== 'undefined') {
+          try {
+            const saved = localStorage.getItem(`portfolio:pos:${t.id}`);
+            if (saved) pos = JSON.parse(saved);
+          } catch {
+            // fallback to t.position
+          }
+        }
+        this.addParticle(t.id, pos);
+      }
+    }
   }
 
   public getParticle(id: string): Particle | undefined {
@@ -60,14 +94,54 @@ export class PhysicsEngine {
     }
   }
 
+  /**
+   * Computes dynamic undirected edges connecting each particle to its closest neighbors.
+   * If nodes are added, removed, or moved, the graph dynamically re-links.
+   */
+  public getDynamicEdges(): [Particle, Particle][] {
+    const particleList = this.getAllParticles();
+    const edgeSet = new Set<string>();
+    const edges: [Particle, Particle][] = [];
+
+    for (let i = 0; i < particleList.length; i++) {
+      const p1 = particleList[i];
+      const neighbors: { particle: Particle; dist: number }[] = [];
+
+      for (let j = 0; j < particleList.length; j++) {
+        if (i === j) continue;
+        const p2 = particleList[j];
+        const dx = p2.position.x - p1.position.x;
+        const dy = p2.position.y - p1.position.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        neighbors.push({ particle: p2, dist });
+      }
+
+      // Sort by proximity
+      neighbors.sort((a, b) => a.dist - b.dist);
+
+      // Connect to the top closest neighbors
+      const closest = neighbors.slice(0, this.maxNeighborsPerNode);
+      for (const item of closest) {
+        if (item.dist <= this.maxConnectionDistance) {
+          const key = [p1.id, item.particle.id].sort().join(':::');
+          if (!edgeSet.has(key)) {
+            edgeSet.add(key);
+            edges.push([p1, item.particle]);
+          }
+        }
+      }
+    }
+
+    return edges;
+  }
+
   public update(dt: number) {
     const particleList = this.getAllParticles();
 
-    // 1. Accumulate forces
+    // 1. Accumulate center attraction and collision repulsion for all pairs
     for (let i = 0; i < particleList.length; i++) {
       const p1 = particleList[i];
 
-      // Very gentle center attraction to keep constellation roughly centered
       p1.acceleration.x -= p1.position.x * this.centerAttractionK;
       p1.acceleration.y -= p1.position.y * this.centerAttractionK;
 
@@ -82,30 +156,38 @@ export class PhysicsEngine {
         // Anti-overlap strong repulsion when cards are closer than minimum clearance
         if (dist < this.minSeparation) {
           const overlap = (this.minSeparation - dist) / this.minSeparation;
-          const pushForce = overlap * overlap * 1800 + (this.repulsionK / (dist * dist));
+          const pushForce = overlap * overlap * 2000 + this.repulsionK / (dist * dist);
           p1.acceleration.x -= dirX * pushForce;
           p1.acceleration.y -= dirY * pushForce;
           p2.acceleration.x += dirX * pushForce;
           p2.acceleration.y += dirY * pushForce;
         } else {
-          // Normal inverse square repulsion
-          const repForce = Math.min(50, this.repulsionK / (dist * dist));
+          const repForce = Math.min(60, this.repulsionK / (dist * dist));
           p1.acceleration.x -= dirX * repForce;
           p1.acceleration.y -= dirY * repForce;
           p2.acceleration.x += dirX * repForce;
           p2.acceleration.y += dirY * repForce;
         }
-
-        // Gentle spring connection
-        const springForce = (dist - this.restLength) * this.springK;
-        p1.acceleration.x += dirX * springForce;
-        p1.acceleration.y += dirY * springForce;
-        p2.acceleration.x -= dirX * springForce;
-        p2.acceleration.y -= dirY * springForce;
       }
     }
 
-    // 2. Verlet integration
+    // 2. Apply spring forces ONLY along dynamic nearest-neighbor edges
+    const dynamicEdges = this.getDynamicEdges();
+    for (const [p1, p2] of dynamicEdges) {
+      const dx = p2.position.x - p1.position.x;
+      const dy = p2.position.y - p1.position.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const dirX = dx / dist;
+      const dirY = dy / dist;
+
+      const springForce = (dist - this.restLength) * this.springK;
+      p1.acceleration.x += dirX * springForce;
+      p1.acceleration.y += dirY * springForce;
+      p2.acceleration.x -= dirX * springForce;
+      p2.acceleration.y -= dirY * springForce;
+    }
+
+    // 3. Verlet integration
     for (const p of particleList) {
       if (p.pinned) {
         p.acceleration = { x: 0, y: 0 };
@@ -126,26 +208,35 @@ export class PhysicsEngine {
     }
   }
 
+  /**
+   * Renders dynamic proximity lines between closest terminal cards.
+   */
   public renderConnections(ctx: CanvasRenderingContext2D, worldToScreen: (v: Vector2) => Vector2) {
-    const particleList = this.getAllParticles();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+    const dynamicEdges = this.getDynamicEdges();
     ctx.lineWidth = 1;
 
-    for (let i = 0; i < particleList.length; i++) {
-      const p1 = worldToScreen({
-        x: particleList[i].position.x + 190,
-        y: particleList[i].position.y + 130,
+    for (const [p1, p2] of dynamicEdges) {
+      const dx = p2.position.x - p1.position.x;
+      const dy = p2.position.y - p1.position.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Organic distance-based opacity fade
+      const opacity = Math.max(0.04, Math.min(0.18, 0.2 * (1 - dist / this.maxConnectionDistance)));
+      ctx.strokeStyle = `rgba(255, 255, 255, ${opacity.toFixed(3)})`;
+
+      const pt1 = worldToScreen({
+        x: p1.position.x + 190,
+        y: p1.position.y + 130,
       });
-      for (let j = i + 1; j < particleList.length; j++) {
-        const p2 = worldToScreen({
-          x: particleList[j].position.x + 190,
-          y: particleList[j].position.y + 130,
-        });
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-      }
+      const pt2 = worldToScreen({
+        x: p2.position.x + 190,
+        y: p2.position.y + 130,
+      });
+
+      ctx.beginPath();
+      ctx.moveTo(pt1.x, pt1.y);
+      ctx.lineTo(pt2.x, pt2.y);
+      ctx.stroke();
     }
   }
 }

@@ -125,17 +125,6 @@ export function getDefaultContent(): PortfolioContent {
           '📚 Reading: Physics simulation algorithms',
         ],
       },
-      {
-        id: 'secret',
-        title: '~/secret',
-        position: { x: 2000, y: 2000 },
-        size: { width: 420, height: 280 },
-        lines: [
-          'cat flag.txt',
-          '🎉 You found the Konami easter egg!',
-          'Achievement Unlocked: Master Explorer',
-        ],
-      },
     ],
   };
 }

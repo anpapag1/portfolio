@@ -47,9 +47,9 @@ describe('Content Schema & Parser', () => {
     expect(imageRefSchema.parse(validImage)).toEqual(validImage);
   });
 
-  it('provides complete default content with all 8 terminals', () => {
+  it('provides complete default content with all 7 terminals', () => {
     const def = getDefaultContent();
-    expect(def.terminals.length).toBeGreaterThanOrEqual(8);
+    expect(def.terminals.length).toBe(7);
     const ids = def.terminals.map((t) => t.id);
     expect(ids).toContain('profile');
     expect(ids).toContain('skills');
@@ -58,7 +58,6 @@ describe('Content Schema & Parser', () => {
     expect(ids).toContain('links');
     expect(ids).toContain('contact');
     expect(ids).toContain('now');
-    expect(ids).toContain('secret');
 
     // Default content must pass its own schema validation
     expect(() => portfolioSchema.parse(def)).not.toThrow();
@@ -104,7 +103,7 @@ describe('Content Loader', () => {
     }));
 
     const result = await loadContent();
-    expect(result.terminals.length).toBeGreaterThanOrEqual(8);
+    expect(result.terminals.length).toBe(7);
     expect(result.terminals.map((t) => t.id)).toContain('profile');
   });
 
@@ -112,7 +111,7 @@ describe('Content Loader', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Network error')));
 
     const result = await loadContent();
-    expect(result.terminals.length).toBeGreaterThanOrEqual(8);
+    expect(result.terminals.length).toBe(7);
     expect(result.terminals.map((t) => t.id)).toContain('profile');
   });
 
@@ -123,7 +122,7 @@ describe('Content Loader', () => {
     }));
 
     const result = await loadContent();
-    expect(result.terminals.length).toBeGreaterThanOrEqual(8);
+    expect(result.terminals.length).toBe(7);
     expect(result.terminals.map((t) => t.id)).toContain('profile');
   });
 });

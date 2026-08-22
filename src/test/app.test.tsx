@@ -121,33 +121,16 @@ describe('App Integration Suite', () => {
     expect(screen.getByTestId('canvas-element')).toBeInTheDocument();
   });
 
-  it('unlocks secret terminal when Konami code sequence is entered', async () => {
+  it('renders all 7 content terminals', async () => {
     await renderAndAwaitLoad();
 
-    expect(screen.queryByText('~/secret')).not.toBeInTheDocument();
-
-    const sequence = [
-      'ArrowUp',
-      'ArrowUp',
-      'ArrowDown',
-      'ArrowDown',
-      'ArrowLeft',
-      'ArrowRight',
-      'ArrowLeft',
-      'ArrowRight',
-      'KeyB',
-      'KeyA',
-    ];
-
-    act(() => {
-      for (const code of sequence) {
-        window.dispatchEvent(new KeyboardEvent('keydown', { code }));
-      }
-    });
-
-    await waitFor(() => {
-      expect(screen.getAllByText('~/secret').length).toBeGreaterThan(0);
-    });
+    expect(screen.getAllByText('~/profile').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('~/skills').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('~/work').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('~/projects').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('~/links').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('~/contact').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('~/now').length).toBeGreaterThan(0);
   });
 
   it('reads saved terminal positions from localStorage', async () => {
