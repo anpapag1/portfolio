@@ -18,7 +18,7 @@ export interface MiniMapProps {
 export function worldToMiniMap(
   world: { x: number; y: number },
   mapSize = { width: 180, height: 130 },
-  worldSpan = 2800
+  worldSpan = 4800
 ) {
   const worldSpanY = worldSpan * (mapSize.height / mapSize.width);
   return {
@@ -30,7 +30,7 @@ export function worldToMiniMap(
 export function miniMapToWorld(
   mapPos: { x: number; y: number },
   mapSize = { width: 180, height: 130 },
-  worldSpan = 2800
+  worldSpan = 4800
 ) {
   const worldSpanY = worldSpan * (mapSize.height / mapSize.width);
   return {
@@ -47,7 +47,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({
   className,
   width = 180,
   height = 130,
-  worldSpan = 2800,
+  worldSpan = 4800,
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -70,8 +70,8 @@ export const MiniMap: React.FC<MiniMapProps> = ({
 
   const viewLeft = Math.min(mapTopLeft.x, mapBottomRight.x);
   const viewTop = Math.min(mapTopLeft.y, mapBottomRight.y);
-  const viewWidth = Math.max(10, Math.abs(mapBottomRight.x - mapTopLeft.x));
-  const viewHeight = Math.max(8, Math.abs(mapBottomRight.y - mapTopLeft.y));
+  const viewWidth = Math.max(8, Math.abs(mapBottomRight.x - mapTopLeft.x));
+  const viewHeight = Math.max(6, Math.abs(mapBottomRight.y - mapTopLeft.y));
 
   const latchedEdges = physics ? physics.getLatchedEdges() : [];
 
