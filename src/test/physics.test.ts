@@ -76,16 +76,16 @@ describe('Verlet Physics Engine', () => {
 
   it('applies spring attraction when particles are beyond restLength', () => {
     const engine = new PhysicsEngine();
-    // restLength is 280; placing at 500 will cause spring to attract
+    // restLength is 650; placing at 900 will cause spring to attract
     engine.addParticle('p1', { x: 0, y: 0 });
-    engine.addParticle('p2', { x: 500, y: 0 });
+    engine.addParticle('p2', { x: 900, y: 0 });
 
     engine.update(1 / 60);
     const p1 = engine.getParticle('p1');
     const p2 = engine.getParticle('p2');
 
     expect(p1!.position.x).toBeGreaterThan(0);
-    expect(p2!.position.x).toBeLessThan(500);
+    expect(p2!.position.x).toBeLessThan(900);
   });
 
   it('applies repulsion force when particles are close', () => {

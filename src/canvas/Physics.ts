@@ -11,11 +11,12 @@ export interface Particle {
 
 export class PhysicsEngine {
   private particles: Map<string, Particle> = new Map();
-  public restLength = 280;
-  public springK = 0.02;
-  public repulsionK = 50000;
-  public centerAttractionK = 0.0001;
-  public damping = 0.96;
+  public restLength = 650;
+  public springK = 0.003;
+  public repulsionK = 250000;
+  public centerAttractionK = 0.00005;
+  public damping = 0.94;
+  public minSeparation = 560;
 
   public addParticle(id: string, position: Vector2, mass = 1.0) {
     this.particles.set(id, {
@@ -66,7 +67,7 @@ export class PhysicsEngine {
     for (let i = 0; i < particleList.length; i++) {
       const p1 = particleList[i];
 
-      // Weak center attraction
+      // Very gentle center attraction to keep constellation roughly centered
       p1.acceleration.x -= p1.position.x * this.centerAttractionK;
       p1.acceleration.y -= p1.position.y * this.centerAttractionK;
 
@@ -78,14 +79,24 @@ export class PhysicsEngine {
         const dirX = dx / dist;
         const dirY = dy / dist;
 
-        // Repulsion (all pairs)
-        const repForce = Math.min(100, this.repulsionK / (dist * dist));
-        p1.acceleration.x -= dirX * repForce;
-        p1.acceleration.y -= dirY * repForce;
-        p2.acceleration.x += dirX * repForce;
-        p2.acceleration.y += dirY * repForce;
+        // Anti-overlap strong repulsion when cards are closer than minimum clearance
+        if (dist < this.minSeparation) {
+          const overlap = (this.minSeparation - dist) / this.minSeparation;
+          const pushForce = overlap * overlap * 1800 + (this.repulsionK / (dist * dist));
+          p1.acceleration.x -= dirX * pushForce;
+          p1.acceleration.y -= dirY * pushForce;
+          p2.acceleration.x += dirX * pushForce;
+          p2.acceleration.y += dirY * pushForce;
+        } else {
+          // Normal inverse square repulsion
+          const repForce = Math.min(50, this.repulsionK / (dist * dist));
+          p1.acceleration.x -= dirX * repForce;
+          p1.acceleration.y -= dirY * repForce;
+          p2.acceleration.x += dirX * repForce;
+          p2.acceleration.y += dirY * repForce;
+        }
 
-        // Spring connection (all pairs mesh)
+        // Gentle spring connection
         const springForce = (dist - this.restLength) * this.springK;
         p1.acceleration.x += dirX * springForce;
         p1.acceleration.y += dirY * springForce;
@@ -121,9 +132,15 @@ export class PhysicsEngine {
     ctx.lineWidth = 1;
 
     for (let i = 0; i < particleList.length; i++) {
-      const p1 = worldToScreen(particleList[i].position);
+      const p1 = worldToScreen({
+        x: particleList[i].position.x + 190,
+        y: particleList[i].position.y + 130,
+      });
       for (let j = i + 1; j < particleList.length; j++) {
-        const p2 = worldToScreen(particleList[j].position);
+        const p2 = worldToScreen({
+          x: particleList[j].position.x + 190,
+          y: particleList[j].position.y + 130,
+        });
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y);
         ctx.lineTo(p2.x, p2.y);

@@ -60,6 +60,23 @@ export default function App() {
     camera.setZoom(1.0);
   });
 
+  // Reset camera & positions
+  const handleResetLayout = useCallback(() => {
+    camera.position = { x: 0, y: 0 };
+    camera.setZoom(1.0);
+    if (content) {
+      content.terminals.forEach((t) => {
+        try {
+          localStorage.removeItem(`portfolio:pos:${t.id}`);
+        } catch {
+          // ignore
+        }
+        physics.setPosition(t.id, t.position);
+        physics.unpin(t.id);
+      });
+    }
+  }, [camera, content, physics]);
+
   // Global keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,8 +87,7 @@ export default function App() {
         setIsHelpOpen(false);
         setIsMobileMapOpen(false);
       } else if (e.key === '0') {
-        camera.position = { x: 0, y: 0 };
-        camera.setZoom(1.0);
+        handleResetLayout();
       } else if (e.key === '+' || e.key === '=') {
         camera.setZoom(camera.zoom * 1.15);
       } else if (e.key === '-' || e.key === '_') {
@@ -81,7 +97,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [camera]);
+  }, [camera, handleResetLayout]);
 
   // Main Canvas & Physics animation loop synced with rAF
   useEffect(() => {
@@ -319,13 +335,10 @@ export default function App() {
         <button
           type="button"
           data-testid="reset-cam-btn"
-          onClick={() => {
-            camera.position = { x: 0, y: 0 };
-            camera.setZoom(1.0);
-          }}
+          onClick={handleResetLayout}
           className="hidden sm:flex items-center justify-center w-9 h-9 bg-[#0f0f0f]/90 border border-white/15 rounded-full text-muted hover:text-accent shadow-lg backdrop-blur-md transition-colors"
-          title="Reset Camera (0)"
-          aria-label="Reset Camera"
+          title="Reset Layout & Camera (0)"
+          aria-label="Reset Layout & Camera"
         >
           <RotateCcw size={16} />
         </button>

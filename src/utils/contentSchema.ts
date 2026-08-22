@@ -40,7 +40,7 @@ export function getDefaultContent(): PortfolioContent {
       {
         id: 'profile',
         title: '~/profile',
-        position: { x: -360, y: -220 },
+        position: { x: -500, y: -260 },
         size: { width: 400, height: 260 },
         lines: [
           'whoami',
@@ -55,7 +55,7 @@ export function getDefaultContent(): PortfolioContent {
       {
         id: 'skills',
         title: '~/skills',
-        position: { x: 120, y: -240 },
+        position: { x: 100, y: -300 },
         size: { width: 380, height: 260 },
         lines: [
           'cat stack.txt',
@@ -67,7 +67,7 @@ export function getDefaultContent(): PortfolioContent {
       {
         id: 'work',
         title: '~/work',
-        position: { x: -440, y: 120 },
+        position: { x: -560, y: 200 },
         size: { width: 440, height: 320 },
         lines: [
           'history | grep experience',
@@ -80,7 +80,7 @@ export function getDefaultContent(): PortfolioContent {
       {
         id: 'projects',
         title: '~/projects',
-        position: { x: 80, y: 100 },
+        position: { x: 60, y: 150 },
         size: { width: 420, height: 300 },
         lines: [
           'ls -la ./showcase',
@@ -93,7 +93,7 @@ export function getDefaultContent(): PortfolioContent {
       {
         id: 'links',
         title: '~/links',
-        position: { x: 540, y: -120 },
+        position: { x: 650, y: -180 },
         size: { width: 340, height: 240 },
         lines: ['find ~/network -type link', 'Connect across platforms:'],
         links: [
@@ -105,7 +105,7 @@ export function getDefaultContent(): PortfolioContent {
       {
         id: 'contact',
         title: '~/contact',
-        position: { x: -160, y: 480 },
+        position: { x: -200, y: 640 },
         size: { width: 380, height: 220 },
         lines: [
           'echo $CONTACT_INFO',
@@ -116,7 +116,7 @@ export function getDefaultContent(): PortfolioContent {
       {
         id: 'now',
         title: '~/now',
-        position: { x: 320, y: 460 },
+        position: { x: 480, y: 580 },
         size: { width: 360, height: 240 },
         lines: [
           'cat /var/log/now.md',
