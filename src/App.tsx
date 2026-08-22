@@ -57,6 +57,7 @@ export default function App() {
         physics.setPosition(t.id, t.position);
         physics.unpin(t.id);
       });
+      physics.resetBonds();
     }
   }, [camera, content, physics]);
 
