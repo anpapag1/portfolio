@@ -177,6 +177,49 @@ describe('DotGrid Rendering & Culling', () => {
     grid.render(mockCtx, cameraLowZoom);
     expect(mockCtx.fillStyle).toBe('rgba(232, 232, 232, 0.04)'); // clamped min 0.04
   });
+
+  it('renders configurable grid styles including lines, crosses, and none', () => {
+    const camera = new Camera({ x: 0, y: 0 }, 1.0, { width: 400, height: 300 });
+
+    // Lines style
+    const linesGrid = new DotGrid({ style: 'lines', spacing: 60 });
+    const mockCtxLines = {
+      strokeStyle: '',
+      lineWidth: 0,
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      stroke: vi.fn(),
+    } as unknown as CanvasRenderingContext2D;
+
+    linesGrid.render(mockCtxLines, camera);
+    expect(mockCtxLines.beginPath).toHaveBeenCalled();
+    expect(mockCtxLines.stroke).toHaveBeenCalled();
+
+    // Crosses style
+    const crossGrid = new DotGrid({ style: 'crosses', dotRadius: 2 });
+    const mockCtxCross = {
+      strokeStyle: '',
+      lineWidth: 0,
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      stroke: vi.fn(),
+    } as unknown as CanvasRenderingContext2D;
+
+    crossGrid.render(mockCtxCross, camera);
+    expect(mockCtxCross.beginPath).toHaveBeenCalled();
+    expect(mockCtxCross.stroke).toHaveBeenCalled();
+
+    // None style
+    const noneGrid = new DotGrid({ style: 'none' });
+    const mockCtxNone = {
+      beginPath: vi.fn(),
+    } as unknown as CanvasRenderingContext2D;
+
+    noneGrid.render(mockCtxNone, camera);
+    expect(mockCtxNone.beginPath).not.toHaveBeenCalled();
+  });
 });
 
 describe('CanvasEngine', () => {
