@@ -5,38 +5,38 @@
       "label": "PROFILE",
       "color": "#4ade80",
       "width": 320,
-      "height": 260,
+      "height": 240,
       "content": {
         "name": "Antonis Papageorgiou",
-        "title": "Computer Science Student & Developer",
+        "title": "CS Student & Developer",
         "subtitle": "",
         "location": "Kavala / Athens, Greece",
-        "bio": "Computer Science student focused on software development, embedded systems, and automation. Active participant in hackathons and competitive programming contests, with hands-on experience in IoT systems, custom hardware development, and application development.",
-        "statusText": "Student at DUTH · Working in Crowdpolicy"
+        "bio": "CS undergrad at DUTH tinkering with embedded systems, custom hardware, and web tooling. I build macro pads, enter hackathons & competitive programming, and build software at Crowdpolicy.",
+        "statusText": "CS @ DUTH · Dev @ Crowdpolicy"
       }
     },
     {
       "id": "skills",
       "label": "SKILLS",
       "color": "#a78bfa",
-      "width": 340,
-      "height": 290,
+      "width": 330,
+      "height": 280,
       "content": {
         "groups": [
           {
-            "label": "Programming",
-            "items": ["C++", "Arduino C", "Python", "JavaScript", "React", "React Native", "HTML", "CSS"]
+            "label": "Languages",
+            "items": ["C++", "Arduino C", "Python", "JavaScript", "React", "React Native", "HTML/CSS"]
           },
           {
             "label": "Hardware & Embedded",
-            "items": ["Arduino", "PCB Design", "IoT Systems", "Smart Home Automation", "Drones"]
+            "items": ["Arduino", "PCB Design", "IoT", "Home Automation", "Drones"]
           },
           {
-            "label": "Creative & Design",
-            "items": ["3D Modeling", "Drawing / Design", "UI/UX Design", "Graphic Design"]
+            "label": "Design & 3D",
+            "items": ["3D Modeling", "UI/UX Design", "Graphic Design"]
           },
           {
-            "label": "Languages",
+            "label": "Languages (Spoken)",
             "items": ["Greek (Native)", "English (C2)"]
           }
         ]
@@ -47,25 +47,25 @@
       "label": "WEBSITES",
       "color": "#4ade80",
       "width": 300,
-      "height": 310,
+      "height": 300,
       "content": {
         "links": [
           {
             "label": "Portfolio",
             "url": "kommwtria.com",
-            "sub": "Personal site",
+            "sub": "Personal website",
             "icon": "auto"
           },
           {
             "label": "GitHub",
             "url": "github.com/anpapag1",
-            "sub": "github.com/anpapag1",
+            "sub": "anpapag1",
             "icon": "auto"
           },
           {
             "label": "Relay",
             "url": "relay.kommwtria.com",
-            "sub": "Wordpress Migration Tool",
+            "sub": "WordPress migration tool",
             "icon": "auto"
           },
           {
@@ -82,37 +82,37 @@
       "label": "PROJECTS",
       "color": "#fb923c",
       "width": 360,
-      "height": 450,
+      "height": 430,
       "content": {
         "items": [
           {
             "name": "KommPad",
-            "desc": "Open source, fully customizable, programmable macro pad designed for efficiency and ease of use.",
-            "tags": ["Arduino", "C++", "PCB Design", "3D Modeling"],
+            "desc": "Programmable 4-key macro pad with custom PCB, 3D printed case, and Arduino C++ firmware.",
+            "tags": ["Arduino", "C++", "PCB Design", "3D Print"],
             "year": "2024",
-            "stars": "Macro Pad",
+            "stars": "Hardware",
             "github": "https://github.com/anpapag1/kommpad"
           },
           {
             "name": "ER Tool",
-            "desc": "Interactive web-based Entity-Relationship diagram editor with graph and schema visualization.",
+            "desc": "Web-based Entity-Relationship diagram editor with visual schema and SQL export.",
             "tags": ["React", "JavaScript", "Web UI"],
             "year": "2024",
-            "stars": "Web App",
+            "stars": "Web",
             "github": "https://github.com/anpapag1/er-tool"
           },
           {
             "name": "Fairs",
-            "desc": "Mobile app for fair bill splitting on group events and travel.",
-            "tags": ["React Native", "Expo", "UI/UX Design"],
+            "desc": "Mobile expense and bill splitting app for group trips and events.",
+            "tags": ["React Native", "Expo", "UI/UX"],
             "year": "2024",
-            "stars": "Mobile App",
+            "stars": "Mobile",
             "github": "https://github.com/anpapag1/fairs"
           },
           {
             "name": "Relay",
-            "desc": "Automated WordPress migration, backup, and environment synchronization tool.",
-            "tags": ["React", "TypeScript", "Automation"],
+            "desc": "Automated WordPress site migration and staging sync tool.",
+            "tags": ["React", "TypeScript", "Tooling"],
             "year": "2023",
             "stars": "Tool",
             "github": "https://github.com/anpapag1/relay"
@@ -121,30 +121,43 @@
       }
     },
     {
+      "id": "education",
+      "label": "EDUCATION",
+      "color": "#38bdf8",
+      "width": 330,
+      "height": 230,
+      "content": {
+        "education": [
+          {
+            "degree": "B.Sc. in Computer Science",
+            "school": "Democritus University of Thrace",
+            "location": "Kavala, Greece",
+            "period": "2023 — 2026 (exp.)",
+            "desc": "Focusing on software development, embedded systems, and algorithms.",
+            "highlights": ["Software Dev", "Embedded Systems", "Algorithms", "IoT"]
+          }
+        ]
+      }
+    },
+    {
       "id": "work",
-      "label": "EXPERIENCE & EDUCATION",
+      "label": "EXPERIENCE",
       "color": "#f472b6",
-      "width": 350,
-      "height": 380,
+      "width": 330,
+      "height": 270,
       "content": {
         "positions": [
-          {
-            "company": "Democritus University of Thrace",
-            "role": "B.Sc. in Computer Science",
-            "period": "09/2023 — Present (exp. 09/2026)",
-            "desc": "Department of Computer Science (Kavala, Greece). Focused on software engineering, embedded systems, and algorithms."
-          },
           {
             "company": "Crowdpolicy",
             "role": "Developer / Collaborator",
             "period": "2024 — Present",
-            "desc": "Full-stack development, innovation initiatives, and civic tech solutions."
+            "desc": "Full-stack development, innovation initiatives, and civic tech platforms."
           },
           {
-            "company": "School Campus Tour Guide",
-            "role": "Volunteer Guide",
-            "period": "University Campus",
-            "desc": "Guided visiting high school students during university campus tours and introductory sessions."
+            "company": "Campus Tour Guide",
+            "role": "Volunteer",
+            "period": "2023 — Present",
+            "desc": "Led university CS department tours for visiting high school students."
           }
         ]
       }
@@ -153,32 +166,43 @@
       "id": "competitions",
       "label": "COMPETITIONS & AWARDS",
       "color": "#e879f9",
-      "width": 340,
-      "height": 380,
+      "width": 350,
+      "height": 420,
       "content": {
-        "groups": [
+        "categories": [
           {
-            "label": "Awards & Honors",
-            "items": ["5th Panhellenic Scratch Game Competition (1st Place 🏆)"]
-          },
-          {
-            "label": "Competitive Programming",
-            "items": ["ICPC 2024", "GRCPC 2025", "SEERC 2025"]
-          },
-          {
-            "label": "Hackathons & Challenges",
+            "title": "Awards",
             "items": [
-              "2nd AI Hackathon Greece (ACEin AUEB)",
-              "NASA Space Apps Challenge 2024",
-              "EESTech Challenge 2024 (AI Applications)",
-              "Univators"
+              {
+                "name": "5th Panhellenic Scratch Competition",
+                "sub": "National Game Dev Contest",
+                "badge": "1st Place",
+                "year": "2020"
+              }
             ]
           },
           {
-            "label": "Certifications",
+            "title": "Competitive Programming",
             "items": [
-              "Cisco 2025: Networking Basics",
-              "Cisco 2025: Networking Devices & Initial Config"
+              { "name": "ICPC", "year": "2024" },
+              { "name": "GRCPC", "year": "2025" },
+              { "name": "SEERC", "year": "2025" }
+            ]
+          },
+          {
+            "title": "Hackathons",
+            "items": [
+              { "name": "2nd AI Hackathon Greece", "sub": "ACEin AUEB", "year": "2024" },
+              { "name": "NASA Space Apps Challenge", "year": "2024" },
+              { "name": "EESTech Challenge", "sub": "AI Applications", "year": "2024" },
+              { "name": "Univators", "year": "2024" }
+            ]
+          },
+          {
+            "title": "Certifications",
+            "items": [
+              { "name": "Cisco: Networking Basics", "year": "2025" },
+              { "name": "Cisco: Devices & Initial Config", "year": "2025" }
             ]
           }
         ]
@@ -188,8 +212,8 @@
       "id": "contact",
       "label": "CONTACT",
       "color": "#fbbf24",
-      "width": 300,
-      "height": 290,
+      "width": 290,
+      "height": 270,
       "content": {
         "channels": [
           {
