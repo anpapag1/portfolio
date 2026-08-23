@@ -245,7 +245,7 @@ export function HUD({
             {/* MiniMap Radar Box (hidden when in focus collapsed mode) */}
             {!isCollapsed && (
               <div
-                className="hud-panel pointer-events-auto p-2 flex flex-col items-center justify-center overflow-hidden w-[140px] sm:w-[160px] shadow-xl transition-all duration-200"
+                className="hud-panel pointer-events-auto p-2 flex flex-col items-center justify-center overflow-hidden w-[140px] sm:w-[160px] shadow-2xl !bg-black/60 !border-white/[0.14] transition-all duration-200"
                 style={{ borderRadius: 16 }}
               >
                 <canvas
@@ -306,7 +306,7 @@ export function HUD({
           <div className="flex-1 min-h-[12px]" />
 
           {/* Minimap */}
-          <div className="hud-panel p-2.5 flex flex-col items-center justify-center overflow-hidden">
+          <div className="hud-panel p-2.5 flex flex-col items-center justify-center overflow-hidden !bg-black/60 !border-white/[0.14] shadow-2xl">
             <canvas
               ref={!isMobile ? minimapRef : undefined}
               className="w-full aspect-[16/8] rounded-lg block"

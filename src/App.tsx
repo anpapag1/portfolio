@@ -248,28 +248,40 @@ export default function App() {
       const bBody = bodiesRef.current.find((b) => b.id === bond.b)
       if (!a || !bBody) continue
       ctx.beginPath()
-      ctx.strokeStyle = "rgba(255,255,255,0.1)"
-      ctx.lineWidth = 0.6
+      ctx.strokeStyle = "rgba(255,255,255,0.22)"
+      ctx.lineWidth = 1.0
       ctx.moveTo(toMapX(a.x), toMapY(a.y))
       ctx.lineTo(toMapX(bBody.x), toMapY(bBody.y))
       ctx.stroke()
     }
 
-    // Nodes
+    // Nodes (Vibrant Glowing Dots)
     for (const body of bodiesRef.current) {
       const node = PORTFOLIO_NODES.find((n) => n.id === body.id)
       if (!node || node.id === "profile") continue
       const mx = toMapX(body.x)
       const my = toMapY(body.y)
+
+      // Outer glow aura
+      ctx.beginPath()
+      ctx.arc(mx, my, MINIMAP_CONFIG.nodeRadius + 2.5, 0, Math.PI * 2)
       ctx.fillStyle = node.color
-      ctx.globalAlpha = 0.9
+      ctx.globalAlpha = 0.28
+      ctx.fill()
+
+      // Core vibrant dot
       ctx.beginPath()
       ctx.arc(mx, my, MINIMAP_CONFIG.nodeRadius, 0, Math.PI * 2)
+      ctx.fillStyle = node.color
+      ctx.globalAlpha = 1.0
+      ctx.shadowColor = node.color
+      ctx.shadowBlur = 6
       ctx.fill()
+      ctx.shadowBlur = 0
     }
     ctx.globalAlpha = 1
 
-    // Viewport rect
+    // Viewport camera frame
     const vp = vpRef.current
     const VW = window.innerWidth
     const VH = window.innerHeight
@@ -282,10 +294,13 @@ export default function App() {
     const ry = toMapY(vTop)
     const rw = vWidth * scale
     const rh = vHeight * scale
-    ctx.fillStyle = "rgba(255,255,255,0.07)"
     ctx.beginPath()
+    ctx.fillStyle = "rgba(255,255,255,0.12)"
+    ctx.strokeStyle = "rgba(255,255,255,0.38)"
+    ctx.lineWidth = 1.0
     ctx.roundRect(rx, ry, rw, rh, 3)
     ctx.fill()
+    ctx.stroke()
 
     ctx.restore()
   }, [])

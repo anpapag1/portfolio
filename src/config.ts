@@ -22,8 +22,8 @@ export const MINIMAP_CONFIG = {
   height: 110,
   minSpanX: 1600,
   minSpanY: 1100,
-  padding: 24,
-  nodeRadius: 3.5,
+  padding: 20,
+  nodeRadius: 4.5,
 }
 
 export const PHYSICS_CONFIG: PhysicsConfig = {
