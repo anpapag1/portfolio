@@ -137,7 +137,7 @@ export function HUD({
           {isCollapsed ? (
             <div
               className="hud-panel pointer-events-auto px-3 py-1.5 flex items-center gap-1.5 shadow-xl cursor-pointer hover:bg-white/[0.08] active:scale-95 transition-all"
-              style={{ borderRadius: 14 }}
+              style={{ borderRadius: 12 }}
               onClick={(e) => {
                 e.stopPropagation()
                 onExpand?.()
@@ -151,19 +151,19 @@ export function HUD({
             </div>
           ) : (
             <div
-              className="hud-panel pointer-events-auto p-2 sm:p-2.5 flex flex-col gap-1 w-[145px] sm:w-[160px] shadow-2xl transition-all duration-200"
-              style={{ borderRadius: 18, maxHeight: "calc(100vh - 180px)" }}
+              className="hud-panel pointer-events-auto p-2 flex flex-col gap-1 w-[130px] sm:w-[142px] shadow-2xl transition-all duration-200"
+              style={{ borderRadius: 16, maxHeight: "calc(100vh - 180px)" }}
             >
-              <div className="mono text-[8.5px] tracking-[0.16em] text-[#555] px-1.5 py-0.5 font-medium">
+              <div className="mono text-[8px] tracking-[0.16em] text-[#555] px-1.5 py-0.5 font-medium">
                 SITEMAP
               </div>
-              <div className="flex flex-col gap-0.5 overflow-y-auto max-h-[240px] pr-0.5">
+              <div className="flex flex-col gap-0.5 overflow-y-auto max-h-[230px] pr-0.5">
                 {nodes.map((node) => (
                   <div
                     key={node.id}
                     role="button"
                     tabIndex={0}
-                    className="nav-item py-1 px-1.5 text-[10.5px] sm:text-[11px]"
+                    className="nav-item !py-1 !px-2 !text-[10px] sm:!text-[10.5px] !gap-2 rounded-md leading-tight"
                     onClick={(e) => {
                       e.stopPropagation()
                       onFocusNode(node.id)
@@ -245,14 +245,12 @@ export function HUD({
             {/* MiniMap Radar Box (hidden when in focus collapsed mode) */}
             {!isCollapsed && (
               <div
-                className="hud-panel pointer-events-auto p-2 flex flex-col items-center justify-center overflow-hidden w-[135px] sm:w-[155px] shadow-xl transition-all duration-200"
-                style={{ borderRadius: 18 }}
+                className="hud-panel pointer-events-auto p-2 flex flex-col items-center justify-center overflow-hidden w-[140px] sm:w-[160px] shadow-xl transition-all duration-200"
+                style={{ borderRadius: 16 }}
               >
                 <canvas
                   ref={isMobile ? minimapRef : undefined}
-                  width={140}
-                  height={85}
-                  className="w-full h-[80px] rounded-lg block"
+                  className="w-full aspect-[16/10] rounded-lg block"
                 />
               </div>
             )}
@@ -311,9 +309,7 @@ export function HUD({
           <div className="hud-panel p-2.5 flex flex-col items-center justify-center overflow-hidden">
             <canvas
               ref={!isMobile ? minimapRef : undefined}
-              width={240}
-              height={110}
-              className="w-full h-[110px] rounded-lg block"
+              className="w-full aspect-[16/8] rounded-lg block"
             />
           </div>
 

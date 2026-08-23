@@ -185,13 +185,32 @@ export default function App() {
     if (!canvas) return
     const ctx = canvas.getContext("2d")
     if (!ctx) return
-    const CW = canvas.width
-    const CH = canvas.height
 
-    ctx.clearRect(0, 0, CW, CH)
+    // Auto-sync canvas internal pixel dimensions with its real displayed size for razor-sharp, zero-stretch rendering
+    const rect = canvas.getBoundingClientRect()
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const displayW = Math.round(rect.width) || canvas.clientWidth || 140
+    const displayH = Math.round(rect.height) || canvas.clientHeight || 80
+    const pixelW = Math.round(displayW * dpr)
+    const pixelH = Math.round(displayH * dpr)
+
+    if (canvas.width !== pixelW || canvas.height !== pixelH) {
+      canvas.width = pixelW
+      canvas.height = pixelH
+    }
+
+    ctx.save()
+    ctx.scale(dpr, dpr)
+    ctx.clearRect(0, 0, displayW, displayH)
+
+    const CW = displayW
+    const CH = displayH
 
     const bodies = bodiesRef.current.filter((b) => b.id !== "profile")
-    if (bodies.length === 0) return
+    if (bodies.length === 0) {
+      ctx.restore()
+      return
+    }
 
     // Centroid and dynamic bounding span
     let sumX = 0
@@ -213,8 +232,8 @@ export default function App() {
     const clusterCenterX = sumX / bodies.length
     const clusterCenterY = sumY / bodies.length
 
-    const spanX = Math.max(maxX - minX + 600, MINIMAP_CONFIG.minSpanX)
-    const spanY = Math.max(maxY - minY + 450, MINIMAP_CONFIG.minSpanY)
+    const spanX = Math.max(maxX - minX + 500, MINIMAP_CONFIG.minSpanX)
+    const spanY = Math.max(maxY - minY + 380, MINIMAP_CONFIG.minSpanY)
     const scale = Math.min(
       (CW - MINIMAP_CONFIG.padding) / spanX,
       (CH - MINIMAP_CONFIG.padding) / spanY,
@@ -229,8 +248,8 @@ export default function App() {
       const bBody = bodiesRef.current.find((b) => b.id === bond.b)
       if (!a || !bBody) continue
       ctx.beginPath()
-      ctx.strokeStyle = "rgba(255,255,255,0.1)"
-      ctx.lineWidth = 0.6
+      ctx.strokeStyle = "rgba(255,255,255,0.12)"
+      ctx.lineWidth = 0.8
       ctx.moveTo(toMapX(a.x), toMapY(a.y))
       ctx.lineTo(toMapX(bBody.x), toMapY(bBody.y))
       ctx.stroke()
@@ -264,9 +283,14 @@ export default function App() {
     const rw = vWidth * scale
     const rh = vHeight * scale
     ctx.fillStyle = "rgba(255,255,255,0.08)"
+    ctx.strokeStyle = "rgba(255,255,255,0.2)"
+    ctx.lineWidth = 0.75
     ctx.beginPath()
-    ctx.roundRect(rx, ry, rw, rh, 4)
+    ctx.roundRect(rx, ry, rw, rh, 3)
     ctx.fill()
+    ctx.stroke()
+
+    ctx.restore()
   }, [])
 
   // ── Initialize on Mount ──────────────────────────────────────
