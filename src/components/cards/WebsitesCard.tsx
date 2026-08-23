@@ -14,41 +14,38 @@ function getAutoFavicon(url: string): string {
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
 }
 
-function resolveIconSrc(url: string, icon?: string): string {
-  const clean = (icon || "").trim()
-  const lower = clean.toLowerCase()
-
-  // If auto, none, or unspecified -> use automatic favicon
-  if (!clean || lower === "auto" || lower === "none") {
-    return getAutoFavicon(url)
-  }
-
-  // If already absolute URL or starts with slash
-  if (
-    clean.startsWith("http://") ||
-    clean.startsWith("https://") ||
-    clean.startsWith("/")
-  ) {
+function resolveIconCandidate(icon: string): string {
+  const clean = icon.trim()
+  if (clean.startsWith("http://") || clean.startsWith("https://")) {
     return clean
   }
-
-  // If path starts with content/
-  if (clean.startsWith("content/")) {
-    return `/${clean}`
+  let path = clean.replace(/^\.?\/+/, "")
+  if (path.toLowerCase().startsWith("public/")) {
+    path = path.slice(7)
   }
-
-  // Relative filename -> resolve from /content/
-  return `/content/${clean}`
+  return `/${path}`
 }
 
 function SiteIcon({ url, icon }: { url: string; icon?: string }) {
-  const targetSrc = resolveIconSrc(url, icon)
+  const clean = (icon || "").trim()
+  const lower = clean.toLowerCase()
   const autoFallback = getAutoFavicon(url)
-  const [src, setSrc] = useState(targetSrc)
+  const isAuto = !clean || lower === "auto" || lower === "none"
+
+  const primarySrc = isAuto ? autoFallback : resolveIconCandidate(clean)
+  const secondarySrc =
+    !isAuto && !clean.startsWith("http") && !clean.includes("/")
+      ? `/content/${clean.replace(/^\.?\/+/, "")}`
+      : null
+
+  const [src, setSrc] = useState(primarySrc)
+  const [triedSecondary, setTriedSecondary] = useState(false)
 
   useEffect(() => {
-    setSrc(resolveIconSrc(url, icon))
-  }, [url, icon])
+    const isA = !clean || lower === "auto" || lower === "none"
+    setSrc(isA ? autoFallback : resolveIconCandidate(clean))
+    setTriedSecondary(false)
+  }, [url, icon, clean, lower, autoFallback])
 
   return (
     <img
@@ -58,7 +55,10 @@ function SiteIcon({ url, icon }: { url: string; icon?: string }) {
       alt=""
       style={{ borderRadius: 5, display: "block", objectFit: "contain" }}
       onError={() => {
-        if (src !== autoFallback) {
+        if (secondarySrc && !triedSecondary && src !== secondarySrc) {
+          setTriedSecondary(true)
+          setSrc(secondarySrc)
+        } else if (src !== autoFallback) {
           setSrc(autoFallback)
         }
       }}
