@@ -199,9 +199,9 @@ export default function App() {
       canvas.height = pixelH
     }
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.save()
     ctx.scale(dpr, dpr)
-    ctx.clearRect(0, 0, displayW, displayH)
 
     const CW = displayW
     const CH = displayH
@@ -248,8 +248,8 @@ export default function App() {
       const bBody = bodiesRef.current.find((b) => b.id === bond.b)
       if (!a || !bBody) continue
       ctx.beginPath()
-      ctx.strokeStyle = "rgba(255,255,255,0.12)"
-      ctx.lineWidth = 0.8
+      ctx.strokeStyle = "rgba(255,255,255,0.1)"
+      ctx.lineWidth = 0.6
       ctx.moveTo(toMapX(a.x), toMapY(a.y))
       ctx.lineTo(toMapX(bBody.x), toMapY(bBody.y))
       ctx.stroke()
@@ -282,13 +282,10 @@ export default function App() {
     const ry = toMapY(vTop)
     const rw = vWidth * scale
     const rh = vHeight * scale
-    ctx.fillStyle = "rgba(255,255,255,0.08)"
-    ctx.strokeStyle = "rgba(255,255,255,0.2)"
-    ctx.lineWidth = 0.75
+    ctx.fillStyle = "rgba(255,255,255,0.07)"
     ctx.beginPath()
     ctx.roundRect(rx, ry, rw, rh, 3)
     ctx.fill()
-    ctx.stroke()
 
     ctx.restore()
   }, [])
