@@ -95,13 +95,6 @@ export default function App() {
   const nodeEls = useRef<Map<string, HTMLDivElement>>(new Map())
   const rafRef = useRef(0)
 
-  // Stats DOM refs
-  const statsEls = useRef({
-    coords: null as HTMLSpanElement | null,
-    physics: null as HTMLSpanElement | null,
-    bondCount: null as HTMLSpanElement | null,
-  })
-
   // React state
   const [bonds, setBonds] = useState<Bond[]>([])
   const [isPaused, setIsPaused] = useState(false)
@@ -339,13 +332,6 @@ export default function App() {
     updateTransform()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Sync Bond Count Stat ─────────────────────────────────────
-  useEffect(() => {
-    if (statsEls.current.bondCount) {
-      statsEls.current.bondCount.textContent = String(bonds.length)
-    }
-  }, [bonds])
-
   // ── Physics + Render Loop ───────────────────────────────────
   useEffect(() => {
     let frameCount = 0
@@ -357,20 +343,7 @@ export default function App() {
 
       // 1. Step physics
       if (physicsActiveRef.current) {
-        const { isStable } = stepPhysics(bodies, bonds, PHYSICS_CONFIG)
-
-        const statsEl = statsEls.current
-        if (statsEl.physics) {
-          const dot = statsEl.physics
-            .previousElementSibling as HTMLElement | null
-          if (dot) {
-            dot.style.background = isStable ? "#22c55e" : "#f97316"
-            if (isStable) dot.classList.remove("active")
-            else dot.classList.add("active")
-          }
-          statsEl.physics.textContent = isStable ? "STABLE" : "ACTIVE"
-          statsEl.physics.style.color = isStable ? "#22c55e" : "#f97316"
-        }
+        stepPhysics(bodies, bonds, PHYSICS_CONFIG)
       }
 
       // 2. Camera auto-focus on startup
@@ -468,25 +441,25 @@ export default function App() {
           grad.addColorStop(0, nodeA.color)
           grad.addColorStop(1, nodeB.color)
 
-          // Glow pass
+          // Subtle Micro-Glow Pass
           bctx.save()
-          bctx.filter = "blur(6px)"
+          bctx.filter = "blur(2.5px)"
           bctx.beginPath()
           bctx.moveTo(a.x, a.y)
           bctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, bBody.x, bBody.y)
           bctx.strokeStyle = grad
-          bctx.globalAlpha = opacity * 0.35
-          bctx.lineWidth = 14
+          bctx.globalAlpha = opacity * 0.18
+          bctx.lineWidth = 4.5
           bctx.stroke()
           bctx.restore()
 
-          // Sharp line
+          // Core Crisp Line Pass
           bctx.beginPath()
           bctx.moveTo(a.x, a.y)
           bctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, bBody.x, bBody.y)
           bctx.strokeStyle = grad
-          bctx.globalAlpha = opacity * 0.7
-          bctx.lineWidth = 1.5
+          bctx.globalAlpha = opacity * 0.65
+          bctx.lineWidth = 1.2
           bctx.stroke()
         }
 
@@ -576,9 +549,6 @@ export default function App() {
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
       const world = screenToWorld(e.clientX, e.clientY)
-      if (statsEls.current.coords) {
-        statsEls.current.coords.textContent = `${Math.round(world.x)}, ${Math.round(world.y)}`
-      }
 
       if (dragRef.current) {
         const { id, ox, oy } = dragRef.current
@@ -1051,7 +1021,6 @@ export default function App() {
           isCollapsed={isHudCollapsed}
           onExpand={() => setIsHudCollapsed(false)}
           minimapRef={minimapRef}
-          statsEls={statsEls}
           onFocusNode={(id) => focusNode(id)}
           onZoomIn={zoomIn}
           onZoomOut={zoomOut}

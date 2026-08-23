@@ -1,11 +1,11 @@
 import { DEFAULT_PHYSICS_CONFIG, type PhysicsConfig } from "./physics/types"
 
 export const SITE_CONFIG = {
-  name: "Portfolio",
-  author: "Constantin",
-  title: "Creative Developer & System Architect",
+  name: "Antonis Papageorgiou · Portfolio",
+  author: "Antonis Papageorgiou",
+  title: "CS Student & Developer",
   description: "Interactive graph-based physics canvas portfolio.",
-  status: "Available for interesting projects",
+  status: "CS @ DUTH · Dev @ Crowdpolicy",
 }
 
 export const VIEWPORT_CONFIG = {

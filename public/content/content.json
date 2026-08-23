@@ -11,8 +11,7 @@
         "title": "CS Student & Developer",
         "subtitle": "",
         "location": "Kavala / Athens, Greece",
-        "bio": "CS undergrad at DUTH tinkering with embedded systems, custom hardware, and web tooling. I build macro pads, enter hackathons & competitive programming, and build software at Crowdpolicy.",
-        "statusText": "CS @ DUTH · Dev @ Crowdpolicy"
+        "bio": "CS undergrad at DUTH building custom hardware, firmware, and web apps. When I'm not designing macro pads or writing C++, I compete in ICPC and build software at Crowdpolicy."
       }
     },
     {
@@ -57,22 +56,16 @@
             "icon": "favicon.png"
           },
           {
-            "label": "GitHub",
-            "url": "github.com/anpapag1",
-            "sub": "anpapag1",
-            "icon": "auto"
-          },
-          {
             "label": "Relay",
             "url": "relay.kommwtria.com",
             "sub": "WordPress migration tool",
             "icon": "relay_logo.png"
           },
           {
-            "label": "LinkedIn",
-            "url": "linkedin.com/in/antonis-papageorgiou",
-            "sub": "Antonis Papageorgiou",
-            "icon": "auto"
+            "label": "ER Tool",
+            "url": "er.kommwtria.com",
+            "sub": "ER diagram editor",
+            "icon": "er_logo.png"
           }
         ]
       }
@@ -87,7 +80,7 @@
         "items": [
           {
             "name": "KommPad",
-            "desc": "Programmable 4-key macro pad with custom PCB, 3D printed case, and Arduino C++ firmware.",
+            "desc": "Custom 4-key macro pad with bespoke PCB, 3D printed chassis, and Arduino C++ firmware with deej audio control.",
             "tags": ["Arduino", "C++", "PCB Design", "3D Print"],
             "year": "2024",
             "stars": "Hardware",
@@ -95,7 +88,7 @@
           },
           {
             "name": "ER Tool",
-            "desc": "Web-based Entity-Relationship diagram editor with visual schema and SQL export.",
+            "desc": "Browser-based ER diagram editor with Chen notation, physics auto-layout, and URL-hash diagram sharing.",
             "tags": ["React", "JavaScript", "Web UI"],
             "year": "2024",
             "stars": "Web",
@@ -103,7 +96,7 @@
           },
           {
             "name": "Fairs",
-            "desc": "Mobile expense and bill splitting app for group trips and events.",
+            "desc": "Mobile expense and bill splitting app for group trips and events with offline balance tracking.",
             "tags": ["React Native", "Expo", "UI/UX"],
             "year": "2024",
             "stars": "Mobile",
@@ -111,7 +104,7 @@
           },
           {
             "name": "Relay",
-            "desc": "Automated WordPress site migration and staging sync tool.",
+            "desc": "Automated WordPress site migration and staging sync tool without manual database exports.",
             "tags": ["React", "TypeScript", "Tooling"],
             "year": "2023",
             "stars": "Tool",
@@ -133,7 +126,7 @@
             "school": "Democritus University of Thrace",
             "location": "Kavala, Greece",
             "period": "2023 — 2026 (exp.)",
-            "desc": "Focusing on software development, embedded systems, and algorithms.",
+            "desc": "Computer Science degree focusing on systems programming, data structures, and computer architecture.",
             "highlights": ["Software Dev", "Embedded Systems", "Algorithms", "IoT"]
           }
         ]
@@ -151,7 +144,7 @@
             "company": "Crowdpolicy",
             "role": "Developer / Collaborator",
             "period": "2024 — Present",
-            "desc": "Full-stack development, innovation initiatives, and civic tech platforms."
+            "desc": "Building full-stack web applications, civic tech platforms, and digital innovation projects."
           },
           {
             "company": "Campus Tour Guide",

@@ -19,11 +19,6 @@ interface HUDProps {
   isCollapsed?: boolean
   onExpand?: () => void
   minimapRef: React.RefObject<HTMLCanvasElement>
-  statsEls: React.MutableRefObject<{
-    coords: HTMLSpanElement | null
-    physics: HTMLSpanElement | null
-    bondCount: HTMLSpanElement | null
-  }>
   onFocusNode: (id: string) => void
   onZoomIn: () => void
   onZoomOut: () => void
@@ -39,7 +34,6 @@ export function HUD({
   isCollapsed = false,
   onExpand,
   minimapRef,
-  statsEls,
   onFocusNode,
   onZoomIn,
   onZoomOut,
@@ -113,18 +107,9 @@ export function HUD({
             {profileExpanded && !isCollapsed && (
               <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] animate-in fade-in slide-in-from-top-1 duration-150">
                 {p.bio && (
-                  <p className="text-[11px] text-[#737373] leading-[1.6] m-0 mb-3">
+                  <p className="text-[11px] text-[#737373] leading-[1.6] m-0">
                     {p.bio}
                   </p>
-                )}
-
-                {p.statusText && (
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#4ade80]/[0.06] border border-[#4ade80]/[0.16]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] shadow-[0_0_6px_#4ade80] flex-shrink-0" />
-                    <span className="mono text-[8.5px] text-[#86efac]">
-                      {p.statusText}
-                    </span>
-                  </div>
                 )}
               </div>
             )}
@@ -291,15 +276,6 @@ export function HUD({
             <p className="text-[11px] text-[#666] leading-[1.65] m-0 font-normal">
               {p.bio}
             </p>
-
-            {p.statusText && (
-              <div className="flex items-center gap-1.5 mt-3.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] shadow-[0_0_6px_#4ade80] flex-shrink-0" />
-                <span className="mono text-[9px] text-[#86efac]">
-                  {p.statusText}
-                </span>
-              </div>
-            )}
           </div>
 
           {/* Flexible Spacer */}
@@ -388,77 +364,35 @@ export function HUD({
           {/* Flexible Spacer */}
           <div className="flex-1 min-h-[12px]" />
 
-          {/* World Coordinates & Controls Help */}
-          <div className="hud-panel p-3 flex flex-col gap-2">
-            <div className="flex items-center justify-between text-[10px] mono">
-              <span className="text-[#555]">WORLD</span>
-              <span
-                ref={(el) => {
-                  statsEls.current.coords = el
-                }}
-                className="text-[#888]"
-              >
-                0, 0
-              </span>
+          {/* Shortcuts / Quick Navigation */}
+          <div className="hud-panel p-2.5 flex flex-col gap-1.5">
+            <div className="mono text-[8.5px] tracking-[0.16em] text-[#555] px-1 font-medium">
+              SHORTCUTS
             </div>
-
-            <div className="h-[1px] bg-white/[0.05]" />
-
-            <div className="space-y-1.5 text-[9.5px] mono">
-              <div className="flex justify-between text-[#444]">
-                <span>PINCH</span>
-                <span className="text-[#333]">zoom</span>
-              </div>
-              <div className="flex justify-between text-[#444]">
-                <span>TWO-FINGER</span>
-                <span className="text-[#333]">pan</span>
-              </div>
-              <div className="flex justify-between text-[#444]">
-                <span>DRAG</span>
-                <span className="text-[#333]">move node</span>
-              </div>
-              <div className="flex justify-between text-[#444]">
-                <span>DBL-CLICK</span>
-                <span className="text-[#333]">focus node</span>
-              </div>
-              <div className="flex justify-between text-[#444]">
-                <span>[ + ] / [ − ]</span>
-                <span className="text-[#333]">zoom step</span>
-              </div>
-              <div className="flex justify-between text-[#444]">
-                <span>[ F ]</span>
-                <span className="text-[#333]">fit all</span>
-              </div>
-              <div className="flex justify-between text-[#444]">
-                <span>[ SPACE ]</span>
-                <span className="text-[#333]">pause</span>
-              </div>
-            </div>
-
-            <div className="h-[1px] bg-white/[0.05]" />
-
-            <div className="flex items-center justify-between text-[9.5px] mono pt-0.5">
-              <div className="flex items-center gap-1.5">
-                <span className="physics-dot bg-[#22c55e]" />
-                <span
-                  ref={(el) => {
-                    statsEls.current.physics = el
-                  }}
-                  className="text-[#22c55e]"
-                >
-                  STABLE
+            <div className="flex flex-col gap-1 text-[9.5px] mono text-[#666]">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[#888] bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                  SPACE
                 </span>
+                <span>Pause Physics</span>
               </div>
-              <div className="text-[#444]">
-                BONDS:{" "}
-                <span
-                  ref={(el) => {
-                    statsEls.current.bondCount = el
-                  }}
-                  className="text-[#777]"
-                >
-                  0
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[#888] bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                  F
                 </span>
+                <span>Fit All</span>
+              </div>
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[#888] bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                  DBL-CLICK
+                </span>
+                <span>Focus Node</span>
+              </div>
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[#888] bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                  + / −
+                </span>
+                <span>Zoom Step</span>
               </div>
             </div>
           </div>
