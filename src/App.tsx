@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from "react"
-import { Menu, X } from "lucide-react"
 import { PORTFOLIO_NODES } from "./data/portfolio"
 import type { PhysicsBody, Bond } from "./types"
 import {
@@ -106,7 +105,6 @@ export default function App() {
   // React state
   const [bonds, setBonds] = useState<Bond[]>([])
   const [isPaused, setIsPaused] = useState(false)
-  const [hudOpen, setHudOpen] = useState(false)
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768
 
   // ── Graph Topology Latching ──────────────────────────────────
@@ -609,26 +607,11 @@ export default function App() {
 
     const preventGesture = (e: Event) => e.preventDefault()
 
-    container.addEventListener("wheel", handleNativeWheel, { passive: false })
-    window.addEventListener("gesturestart", preventGesture, { passive: false })
-    window.addEventListener("gesturechange", preventGesture, { passive: false })
-    window.addEventListener("gestureend", preventGesture, { passive: false })
-
-    return () => {
-      container.removeEventListener("wheel", handleNativeWheel)
-      window.removeEventListener("gesturestart", preventGesture)
-      window.removeEventListener("gesturechange", preventGesture)
-      window.removeEventListener("gestureend", preventGesture)
-    }
-  }, [zoomToward, updateTransform])
-
-  // ── Touch Handlers ───────────────────────────────────────────
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      e.preventDefault()
+    const handleNativeTouchStart = (e: TouchEvent) => {
       autoFocusRef.current = false
 
       if (e.touches.length === 2) {
+        e.preventDefault()
         const t0 = e.touches[0]
         const t1 = e.touches[1]
         const dist = Math.hypot(
@@ -646,6 +629,15 @@ export default function App() {
       }
 
       const touch = e.touches[0]
+      const target = e.target as HTMLElement | null
+      if (
+        target?.closest(
+          ".hud-panel, .nav-item, button, a, input, textarea, select, [role='button']",
+        )
+      ) {
+        return
+      }
+
       const world = screenToWorld(touch.clientX, touch.clientY)
       let hitId: string | null = null
       for (const body of bodiesRef.current) {
@@ -659,6 +651,7 @@ export default function App() {
       }
 
       if (hitId) {
+        e.preventDefault()
         const body = bodiesRef.current.find((b) => b.id === hitId)!
         body.dragging = true
         dragRef.current = {
@@ -684,15 +677,11 @@ export default function App() {
           py: vpRef.current.panY,
         }
       }
-    },
-    [screenToWorld],
-  )
+    }
 
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      e.preventDefault()
-
+    const handleNativeTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 2 && pinchRef.current) {
+        e.preventDefault()
         const t0 = e.touches[0]
         const t1 = e.touches[1]
         const dist = Math.hypot(
@@ -707,6 +696,7 @@ export default function App() {
 
       const touch = e.touches[0]
       if (dragRef.current) {
+        e.preventDefault()
         const { id, ox, oy } = dragRef.current
         const body = bodiesRef.current.find((b) => b.id === id)
         if (!body) return
@@ -727,18 +717,15 @@ export default function App() {
           setBonds([...nb])
         }
       } else if (panRef.current) {
+        e.preventDefault()
         const { sx, sy, px, py } = panRef.current
         vpRef.current.panX = px + (touch.clientX - sx)
         vpRef.current.panY = py + (touch.clientY - sy)
         updateTransform()
       }
-    },
-    [screenToWorld, zoomToward, updateTransform],
-  )
+    }
 
-  const handleTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      e.preventDefault()
+    const handleNativeTouchEnd = (e: TouchEvent) => {
       pinchRef.current = null
       if (e.touches.length === 0) {
         if (dragRef.current) {
@@ -753,9 +740,28 @@ export default function App() {
         panRef.current = null
         touchRef.current = null
       }
-    },
-    [latchNeighbors],
-  )
+    }
+
+    container.addEventListener("wheel", handleNativeWheel, { passive: false })
+    container.addEventListener("touchstart", handleNativeTouchStart, { passive: false })
+    container.addEventListener("touchmove", handleNativeTouchMove, { passive: false })
+    container.addEventListener("touchend", handleNativeTouchEnd, { passive: false })
+    container.addEventListener("touchcancel", handleNativeTouchEnd, { passive: false })
+    window.addEventListener("gesturestart", preventGesture, { passive: false })
+    window.addEventListener("gesturechange", preventGesture, { passive: false })
+    window.addEventListener("gestureend", preventGesture, { passive: false })
+
+    return () => {
+      container.removeEventListener("wheel", handleNativeWheel)
+      container.removeEventListener("touchstart", handleNativeTouchStart)
+      container.removeEventListener("touchmove", handleNativeTouchMove)
+      container.removeEventListener("touchend", handleNativeTouchEnd)
+      container.removeEventListener("touchcancel", handleNativeTouchEnd)
+      window.removeEventListener("gesturestart", preventGesture)
+      window.removeEventListener("gesturechange", preventGesture)
+      window.removeEventListener("gestureend", preventGesture)
+    }
+  }, [zoomToward, updateTransform, screenToWorld, latchNeighbors])
 
   // ── HUD Callbacks ────────────────────────────────────────────
   const focusNode = useCallback((id: string) => {
@@ -809,8 +815,15 @@ export default function App() {
   }, [zoomToward])
 
   const togglePhysics = useCallback(() => {
-    physicsActiveRef.current = !physicsActiveRef.current
-    setIsPaused((p) => !p)
+    const nextState = !physicsActiveRef.current
+    physicsActiveRef.current = nextState
+    if (!nextState) {
+      for (const b of bodiesRef.current) {
+        b.vx = 0
+        b.vy = 0
+      }
+    }
+    setIsPaused(!nextState)
   }, [])
 
   // ── Keyboard Shortcuts ───────────────────────────────────────
@@ -849,9 +862,6 @@ export default function App() {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       {/* Dot-grid background */}
       <div ref={bgRef} className="absolute inset-0 canvas-bg" />
@@ -916,55 +926,22 @@ export default function App() {
         })}
       </div>
 
-      {/* Mobile HUD Toggle */}
-      {isMobile && (
-        <button
-          type="button"
-          onClick={() => setHudOpen((o) => !o)}
-          style={{
-            position: "fixed",
-            bottom: 20,
-            right: 20,
-            zIndex: 200,
-            width: 44,
-            height: 44,
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.08)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            color: "#888",
-            fontSize: 18,
-            cursor: "pointer",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {hudOpen ? <X size={18} /> : <Menu size={18} />}
-        </button>
-      )}
-
       {/* HUD overlay */}
       <div style={{ zIndex: 50, position: "relative" }}>
-        {(!isMobile || hudOpen) && (
-          <HUD
-            nodes={PORTFOLIO_NODES.filter((n) => n.id !== "profile")}
-            profile={PORTFOLIO_NODES.find((n) => n.id === "profile")!}
-            bonds={bonds}
-            isPaused={isPaused}
-            minimapRef={minimapRef}
-            statsEls={statsEls}
-            onFocusNode={(id) => {
-              focusNode(id)
-              setHudOpen(false)
-            }}
-            onZoomIn={zoomIn}
-            onZoomOut={zoomOut}
-            onFitAll={fitAll}
-            onTogglePhysics={togglePhysics}
-          />
-        )}
+        <HUD
+          nodes={PORTFOLIO_NODES.filter((n) => n.id !== "profile")}
+          profile={PORTFOLIO_NODES.find((n) => n.id === "profile")!}
+          bonds={bonds}
+          isPaused={isPaused}
+          isMobile={isMobile}
+          minimapRef={minimapRef}
+          statsEls={statsEls}
+          onFocusNode={(id) => focusNode(id)}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onFitAll={fitAll}
+          onTogglePhysics={togglePhysics}
+        />
       </div>
     </div>
   )
