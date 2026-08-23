@@ -16,6 +16,8 @@ interface HUDProps {
   bonds: Bond[]
   isPaused: boolean
   isMobile?: boolean
+  isCollapsed?: boolean
+  onExpand?: () => void
   minimapRef: React.RefObject<HTMLCanvasElement>
   statsEls: React.MutableRefObject<{
     coords: HTMLSpanElement | null
@@ -34,6 +36,8 @@ export function HUD({
   profile,
   isPaused,
   isMobile = false,
+  isCollapsed = false,
+  onExpand,
   minimapRef,
   statsEls,
   onFocusNode,
@@ -90,7 +94,7 @@ export function HUD({
               {/* Chevron Toggle Button */}
               <button
                 type="button"
-                className="w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[#888] hover:text-[#eee] transition-colors flex-shrink-0"
+                className="w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[#888] hover:text-[#eee] transition-colors flex-shrink-0 cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation()
                   setProfileExpanded((ex) => !ex)
@@ -106,7 +110,7 @@ export function HUD({
             </div>
 
             {/* Expanded Content Dropdown */}
-            {profileExpanded && (
+            {profileExpanded && !isCollapsed && (
               <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] animate-in fade-in slide-in-from-top-1 duration-150">
                 {p.bio && (
                   <p className="text-[11px] text-[#737373] leading-[1.6] m-0 mb-3">
@@ -127,39 +131,56 @@ export function HUD({
           </div>
         </div>
 
-        {/* Bottom Row: Bottom-Left Sitemap & Bottom-Right MiniMap */}
+        {/* Bottom Row: Bottom-Left Sitemap & Bottom-Right Controls / MiniMap */}
         <div className="flex items-end justify-between w-full pointer-events-none gap-2">
-          {/* Bottom Left: Sitemap Capsule */}
-          <div
-            className="hud-panel pointer-events-auto p-2 sm:p-2.5 flex flex-col gap-1 w-[145px] sm:w-[160px] shadow-2xl"
-            style={{ borderRadius: 18, maxHeight: "calc(100vh - 180px)" }}
-          >
-            <div className="mono text-[8.5px] tracking-[0.16em] text-[#555] px-1.5 py-0.5 font-medium">
-              SITEMAP
+          {/* Bottom Left: Sitemap Panel OR Sliver */}
+          {isCollapsed ? (
+            <div
+              className="hud-panel pointer-events-auto px-3 py-1.5 flex items-center gap-1.5 shadow-xl cursor-pointer hover:bg-white/[0.08] active:scale-95 transition-all"
+              style={{ borderRadius: 14 }}
+              onClick={(e) => {
+                e.stopPropagation()
+                onExpand?.()
+              }}
+              title="Expand Sitemap"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] opacity-80" />
+              <span className="mono text-[8.5px] tracking-[0.14em] text-[#888] font-medium">
+                SITEMAP ▲
+              </span>
             </div>
-            <div className="flex flex-col gap-0.5 overflow-y-auto max-h-[240px] pr-0.5">
-              {nodes.map((node) => (
-                <div
-                  key={node.id}
-                  role="button"
-                  tabIndex={0}
-                  className="nav-item py-1 px-1.5 text-[10.5px] sm:text-[11px]"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onFocusNode(node.id)
-                  }}
-                >
-                  <span
-                    className="w-1.5 h-1.5 rounded-full flex-shrink-0 opacity-80"
-                    style={{ background: node.color }}
-                  />
-                  <span className="truncate">{node.label}</span>
-                </div>
-              ))}
+          ) : (
+            <div
+              className="hud-panel pointer-events-auto p-2 sm:p-2.5 flex flex-col gap-1 w-[145px] sm:w-[160px] shadow-2xl transition-all duration-200"
+              style={{ borderRadius: 18, maxHeight: "calc(100vh - 180px)" }}
+            >
+              <div className="mono text-[8.5px] tracking-[0.16em] text-[#555] px-1.5 py-0.5 font-medium">
+                SITEMAP
+              </div>
+              <div className="flex flex-col gap-0.5 overflow-y-auto max-h-[240px] pr-0.5">
+                {nodes.map((node) => (
+                  <div
+                    key={node.id}
+                    role="button"
+                    tabIndex={0}
+                    className="nav-item py-1 px-1.5 text-[10.5px] sm:text-[11px]"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onFocusNode(node.id)
+                    }}
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full flex-shrink-0 opacity-80"
+                      style={{ background: node.color }}
+                    />
+                    <span className="truncate">{node.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Bottom Right: Floating Controls + MiniMap Radar Box */}
+          {/* Bottom Right: Floating Controls + (MiniMap when not collapsed) */}
           <div className="flex flex-col gap-1.5 items-end pointer-events-none">
             {/* Minimal Controls Row without background */}
             <div className="pointer-events-auto flex items-center justify-end gap-1.5 px-0.5">
@@ -221,18 +242,20 @@ export function HUD({
               </button>
             </div>
 
-            {/* MiniMap Radar Box */}
-            <div
-              className="hud-panel pointer-events-auto p-2 flex flex-col items-center justify-center overflow-hidden w-[135px] sm:w-[155px] shadow-xl"
-              style={{ borderRadius: 18 }}
-            >
-              <canvas
-                ref={isMobile ? minimapRef : undefined}
-                width={140}
-                height={85}
-                className="w-full h-[80px] rounded-lg block"
-              />
-            </div>
+            {/* MiniMap Radar Box (hidden when in focus collapsed mode) */}
+            {!isCollapsed && (
+              <div
+                className="hud-panel pointer-events-auto p-2 flex flex-col items-center justify-center overflow-hidden w-[135px] sm:w-[155px] shadow-xl transition-all duration-200"
+                style={{ borderRadius: 18 }}
+              >
+                <canvas
+                  ref={isMobile ? minimapRef : undefined}
+                  width={140}
+                  height={85}
+                  className="w-full h-[80px] rounded-lg block"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

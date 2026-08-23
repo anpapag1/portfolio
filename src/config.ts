@@ -14,6 +14,7 @@ export const VIEWPORT_CONFIG = {
   zoomFactor: 1.22,
   lerpSpeed: 0.072,
   fitPadding: 48,
+  interactiveZoomThreshold: 0.72,
 }
 
 export const MINIMAP_CONFIG = {

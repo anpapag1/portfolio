@@ -84,6 +84,20 @@ body {
   opacity: 0.75;
 }
 
+/* Overview Mode: Disable inner link interactions when zoomed out so whole card is a drag surface */
+.overview-mode .node-card a,
+.overview-mode .node-card button,
+.overview-mode .node-card [role="button"],
+.overview-mode .node-card input {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+.overview-mode .node-card {
+  cursor: grab !important;
+}
+
 /* HUD panel */
 .hud-panel {
   background: rgba(255, 255, 255, 0.04);

@@ -105,7 +105,9 @@ export default function App() {
   // React state
   const [bonds, setBonds] = useState<Bond[]>([])
   const [isPaused, setIsPaused] = useState(false)
+  const [isHudCollapsed, setIsHudCollapsed] = useState(false)
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768
+  const lastTapRef = useRef<{ id: string; time: number; x: number; y: number } | null>(null)
 
   // ── Graph Topology Latching ──────────────────────────────────
   const latchNeighbors = useCallback((nodeId: string) => {
@@ -126,6 +128,11 @@ export default function App() {
     const H = window.innerHeight
     if (transformRef.current) {
       transformRef.current.style.transform = `translate(${W / 2 + panX}px, ${H / 2 + panY}px) scale(${zoom})`
+      if (zoom < VIEWPORT_CONFIG.interactiveZoomThreshold) {
+        transformRef.current.classList.add("overview-mode")
+      } else {
+        transformRef.current.classList.remove("overview-mode")
+      }
     }
   }, [])
 
@@ -353,7 +360,7 @@ export default function App() {
 
       // 3. Smooth camera lerp
       if (targetVpRef.current) {
-        const t = 0.072
+        const t = 0.16
         const tv = targetVpRef.current
         vp.panX += (tv.panX - vp.panX) * t
         vp.panY += (tv.panY - vp.panY) * t
@@ -363,7 +370,7 @@ export default function App() {
           Math.abs(tv.panX - vp.panX) +
           Math.abs(tv.panY - vp.panY) +
           Math.abs(tv.zoom - vp.zoom) * 100
-        if (diff < 0.3) {
+        if (diff < 0.5) {
           vp.panX = tv.panX
           vp.panY = tv.panY
           vp.zoom = tv.zoom
@@ -492,9 +499,15 @@ export default function App() {
   // ── Interaction Handlers ─────────────────────────────────────
   const handleNodeMouseDown = useCallback(
     (e: React.MouseEvent, id: string) => {
+      const isOverview =
+        vpRef.current.zoom < VIEWPORT_CONFIG.interactiveZoomThreshold
+      if (isOverview) {
+        e.preventDefault()
+      }
       e.stopPropagation()
       if (e.button !== 0) return
       autoFocusRef.current = false
+      setIsHudCollapsed(false)
       const body = bodiesRef.current.find((b) => b.id === id)
       if (!body) return
       const world = screenToWorld(e.clientX, e.clientY)
@@ -512,16 +525,10 @@ export default function App() {
     [screenToWorld],
   )
 
-  const handleDoubleClick = useCallback((e: React.MouseEvent, id: string) => {
-    e.stopPropagation()
-    const body = bodiesRef.current.find((b) => b.id === id)
-    if (!body) return
-    targetVpRef.current = { panX: -body.x, panY: -body.y, zoom: 1.1 }
-  }, [])
-
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0) return
     autoFocusRef.current = false
+    setIsHudCollapsed(false)
     panRef.current = {
       sx: e.clientX,
       sy: e.clientY,
@@ -583,6 +590,99 @@ export default function App() {
     panRef.current = null
   }, [latchNeighbors])
 
+  // ── HUD Callbacks ────────────────────────────────────────────
+  const focusNode = useCallback((id: string) => {
+    const body = bodiesRef.current.find((b) => b.id === id)
+    if (!body) return
+    autoFocusRef.current = false
+
+    // Settle node movement immediately so it does not drift away while camera is centering
+    body.vx = 0
+    body.vy = 0
+
+    const isMob = typeof window !== "undefined" && window.innerWidth < 768
+    const cardW = body.w || 320
+    const cardH = body.h || 300
+    const padX = isMob ? 36 : 140
+    const padY = isMob ? 130 : 120
+
+    const scaleX = (window.innerWidth - padX) / cardW
+    const scaleY = (window.innerHeight - padY) / cardH
+    const targetZoom = isMob
+      ? Math.min(1.0, scaleX, scaleY)
+      : Math.min(1.15, scaleX, scaleY)
+
+    targetVpRef.current = {
+      panX: -body.x * targetZoom,
+      panY: -body.y * targetZoom,
+      zoom: targetZoom,
+    }
+
+    if (isMob) {
+      setIsHudCollapsed(true)
+    }
+  }, [])
+
+  const fitAll = useCallback(() => {
+    setIsHudCollapsed(false)
+    const bodies = bodiesRef.current
+    if (bodies.length === 0) return
+    const pad = VIEWPORT_CONFIG.fitPadding
+    const minX = Math.min(...bodies.map((b) => b.x - b.w / 2))
+    const maxX = Math.max(...bodies.map((b) => b.x + b.w / 2))
+    const minY = Math.min(...bodies.map((b) => b.y - b.h / 2))
+    const maxY = Math.max(...bodies.map((b) => b.y + b.h / 2))
+    const W = window.innerWidth
+    const H = window.innerHeight
+    const scaleX = (W - pad * 2) / (maxX - minX || 1)
+    const scaleY = (H - pad * 2) / (maxY - minY || 1)
+    const fitZoom = Math.min(scaleX, scaleY, 1)
+    const cx = (minX + maxX) / 2
+    const cy = (minY + maxY) / 2
+    targetVpRef.current = {
+      panX: -cx * fitZoom,
+      panY: -cy * fitZoom,
+      zoom: fitZoom,
+    }
+  }, [])
+
+  const zoomIn = useCallback(() => {
+    autoFocusRef.current = false
+    setIsHudCollapsed(false)
+    const baseZoom = targetVpRef.current?.zoom ?? vpRef.current.zoom
+    zoomToward(
+      baseZoom * 1.3,
+      window.innerWidth / 2,
+      window.innerHeight / 2,
+      true,
+    )
+  }, [zoomToward])
+
+  const zoomOut = useCallback(() => {
+    autoFocusRef.current = false
+    setIsHudCollapsed(false)
+    const baseZoom = targetVpRef.current?.zoom ?? vpRef.current.zoom
+    zoomToward(
+      baseZoom / 1.3,
+      window.innerWidth / 2,
+      window.innerHeight / 2,
+      true,
+    )
+  }, [zoomToward])
+
+  const togglePhysics = useCallback(() => {
+    setIsHudCollapsed(false)
+    const nextState = !physicsActiveRef.current
+    physicsActiveRef.current = nextState
+    if (!nextState) {
+      for (const b of bodiesRef.current) {
+        b.vx = 0
+        b.vy = 0
+      }
+    }
+    setIsPaused(!nextState)
+  }, [])
+
   // ── Native Non-Passive Wheel & Gesture Listeners ─────────────
   useEffect(() => {
     const container = containerRef.current
@@ -630,13 +730,20 @@ export default function App() {
 
       const touch = e.touches[0]
       const target = e.target as HTMLElement | null
-      if (
-        target?.closest(
-          ".hud-panel, .nav-item, button, a, input, textarea, select, [role='button']",
-        )
-      ) {
+      const isInsideHud = !!target?.closest(".hud-panel, .nav-item")
+      if (isInsideHud) {
         return
       }
+
+      const isInsideInteractiveCard =
+        vpRef.current.zoom >= VIEWPORT_CONFIG.interactiveZoomThreshold &&
+        !!target?.closest("a, button, input, textarea, select, [role='button']")
+
+      if (isInsideInteractiveCard) {
+        return
+      }
+
+      setIsHudCollapsed(false)
 
       const world = screenToWorld(touch.clientX, touch.clientY)
       let hitId: string | null = null
@@ -728,12 +835,43 @@ export default function App() {
     const handleNativeTouchEnd = (e: TouchEvent) => {
       pinchRef.current = null
       if (e.touches.length === 0) {
-        if (dragRef.current) {
+        if (dragRef.current && touchRef.current) {
           const { id } = dragRef.current
           const body = bodiesRef.current.find((b) => b.id === id)
           if (body) body.dragging = false
           const el = nodeEls.current.get(id)
           if (el) el.classList.remove("dragging")
+
+          // Double tap detection on touch devices
+          const touch = e.changedTouches[0]
+          if (touch) {
+            const movedDist = Math.hypot(
+              touch.clientX - touchRef.current.ox,
+              touch.clientY - touchRef.current.oy,
+            )
+            const now = Date.now()
+            const lastTap = lastTapRef.current
+
+            if (
+              lastTap &&
+              lastTap.id === id &&
+              now - lastTap.time < 320 &&
+              movedDist < 12
+            ) {
+              lastTapRef.current = null
+              focusNode(id)
+            } else if (movedDist < 12) {
+              lastTapRef.current = {
+                id,
+                time: now,
+                x: touch.clientX,
+                y: touch.clientY,
+              }
+            } else {
+              lastTapRef.current = null
+            }
+          }
+
           dragRef.current = null
           latchNeighbors(id)
         }
@@ -761,70 +899,7 @@ export default function App() {
       window.removeEventListener("gesturechange", preventGesture)
       window.removeEventListener("gestureend", preventGesture)
     }
-  }, [zoomToward, updateTransform, screenToWorld, latchNeighbors])
-
-  // ── HUD Callbacks ────────────────────────────────────────────
-  const focusNode = useCallback((id: string) => {
-    const body = bodiesRef.current.find((b) => b.id === id)
-    if (!body) return
-    targetVpRef.current = { panX: -body.x, panY: -body.y, zoom: 1.15 }
-  }, [])
-
-  const fitAll = useCallback(() => {
-    const bodies = bodiesRef.current
-    if (bodies.length === 0) return
-    const pad = VIEWPORT_CONFIG.fitPadding
-    const minX = Math.min(...bodies.map((b) => b.x - b.w / 2))
-    const maxX = Math.max(...bodies.map((b) => b.x + b.w / 2))
-    const minY = Math.min(...bodies.map((b) => b.y - b.h / 2))
-    const maxY = Math.max(...bodies.map((b) => b.y + b.h / 2))
-    const W = window.innerWidth
-    const H = window.innerHeight
-    const scaleX = (W - pad * 2) / (maxX - minX || 1)
-    const scaleY = (H - pad * 2) / (maxY - minY || 1)
-    const fitZoom = Math.min(scaleX, scaleY, 1)
-    const cx = (minX + maxX) / 2
-    const cy = (minY + maxY) / 2
-    targetVpRef.current = {
-      panX: -cx * fitZoom,
-      panY: -cy * fitZoom,
-      zoom: fitZoom,
-    }
-  }, [])
-
-  const zoomIn = useCallback(() => {
-    autoFocusRef.current = false
-    const baseZoom = targetVpRef.current?.zoom ?? vpRef.current.zoom
-    zoomToward(
-      baseZoom * 1.3,
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-      true,
-    )
-  }, [zoomToward])
-
-  const zoomOut = useCallback(() => {
-    autoFocusRef.current = false
-    const baseZoom = targetVpRef.current?.zoom ?? vpRef.current.zoom
-    zoomToward(
-      baseZoom / 1.3,
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-      true,
-    )
-  }, [zoomToward])
-
-  const togglePhysics = useCallback(() => {
-    const nextState = !physicsActiveRef.current
-    physicsActiveRef.current = nextState
-    if (!nextState) {
-      for (const b of bodiesRef.current) {
-        b.vx = 0
-        b.vy = 0
-      }
-    }
-    setIsPaused(!nextState)
-  }, [])
+  }, [zoomToward, updateTransform, screenToWorld, latchNeighbors, focusNode])
 
   // ── Keyboard Shortcuts ───────────────────────────────────────
   useEffect(() => {
@@ -918,7 +993,10 @@ export default function App() {
                 zIndex: 10,
               }}
               onMouseDown={(e) => handleNodeMouseDown(e, node.id)}
-              onDoubleClick={(e) => handleDoubleClick(e, node.id)}
+              onDoubleClick={(e) => {
+                e.stopPropagation()
+                focusNode(node.id)
+              }}
             >
               <NodeCardContent node={node} />
             </div>
@@ -934,6 +1012,8 @@ export default function App() {
           bonds={bonds}
           isPaused={isPaused}
           isMobile={isMobile}
+          isCollapsed={isHudCollapsed}
+          onExpand={() => setIsHudCollapsed(false)}
           minimapRef={minimapRef}
           statsEls={statsEls}
           onFocusNode={(id) => focusNode(id)}
