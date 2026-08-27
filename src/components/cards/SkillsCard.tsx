@@ -17,7 +17,7 @@ export function SkillsCard({ node }: { node: NodeData }) {
             className="mono"
             style={{
               fontSize: 9,
-              color: "#525252",
+              color: "#ebe5e5",
               letterSpacing: "0.12em",
               marginBottom: 7,
             }}

@@ -56,7 +56,7 @@ export function ContactCard({ node }: { node: NodeData }) {
               <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
                 <span
                   style={{
-                    color: "#555",
+                    color: "#a0a0a0",
                     display: "flex",
                     alignItems: "center",
                     flexShrink: 0,

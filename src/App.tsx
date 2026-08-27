@@ -994,8 +994,8 @@ export default function App() {
               style={{
                 width: node.width,
                 transform: `translate(${initX}px, ${initY}px)`,
-                background: `rgba(${hexToRgb(node.color)}, 0.06)`,
-                borderColor: `rgba(${hexToRgb(node.color)}, 0.18)`,
+                background: `rgba(${hexToRgb(node.color)}, .12)`,
+                borderColor: `rgba(${hexToRgb(node.color)}, .1)`,
                 zIndex: 10,
               }}
               onMouseDown={(e) => handleNodeMouseDown(e, node.id)}
