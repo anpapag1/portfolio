@@ -10,6 +10,9 @@ import { stepPhysics } from "./physics/engine"
 import { HUD } from "./components/HUD"
 import { NodeCardContent } from "./components/cards/CardContent"
 import { VIEWPORT_CONFIG, MINIMAP_CONFIG, PHYSICS_CONFIG } from "./config"
+import { PrivacyPolicyView } from "./components/privacy/PrivacyPolicyView"
+import { PrivacyPolicyDirectory } from "./components/privacy/PrivacyPolicyDirectory"
+
 
 function hexToRgb(hex: string) {
   const r = parseInt(hex.slice(1, 3), 16)
@@ -99,8 +102,55 @@ export default function App() {
   const [bonds, setBonds] = useState<Bond[]>([])
   const [isPaused, setIsPaused] = useState(false)
   const [isHudCollapsed, setIsHudCollapsed] = useState(false)
+  const [pathname, setPathname] = useState(() =>
+    typeof window !== "undefined" ? window.location.pathname : "/"
+  )
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768
   const lastTapRef = useRef<{ id: string; time: number; x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setPathname(window.location.pathname)
+    }
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [])
+
+  const navigate = useCallback((path: string) => {
+    window.history.pushState({}, "", path)
+    setPathname(path)
+  }, [])
+
+  const isPrivacy = pathname.startsWith("/privacy-policy")
+
+  useEffect(() => {
+    if (isPrivacy) {
+      document.documentElement.style.overflow = "auto"
+      document.documentElement.style.touchAction = "auto"
+      document.body.style.overflow = "auto"
+      document.body.style.touchAction = "auto"
+      document.body.style.userSelect = "auto"
+      const root = document.getElementById("root")
+      if (root) {
+        root.style.overflow = "auto"
+        root.style.touchAction = "auto"
+      }
+    } else {
+      document.documentElement.style.overflow = "hidden"
+      document.documentElement.style.touchAction = "none"
+      document.body.style.overflow = "hidden"
+      document.body.style.touchAction = "none"
+      document.body.style.userSelect = "none"
+      const root = document.getElementById("root")
+      if (root) {
+        root.style.overflow = "hidden"
+        root.style.touchAction = "none"
+      }
+    }
+  }, [isPrivacy])
+
+
+
 
   // ── Graph Topology Latching ──────────────────────────────────
   const latchNeighbors = useCallback((nodeId: string) => {
@@ -501,9 +551,13 @@ export default function App() {
       rafRef.current = requestAnimationFrame(tick)
     }
 
+    if (isPrivacy) {
+      return
+    }
+
     rafRef.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [updateTransform, drawMinimap])
+  }, [updateTransform, drawMinimap, isPrivacy])
 
   // ── Interaction Handlers ─────────────────────────────────────
   const handleNodeMouseDown = useCallback(
@@ -691,6 +745,8 @@ export default function App() {
 
   // ── Native Non-Passive Wheel & Gesture Listeners ─────────────
   useEffect(() => {
+    if (isPrivacy) return
+
     const container = containerRef.current
     if (!container) return
 
@@ -905,11 +961,13 @@ export default function App() {
       window.removeEventListener("gesturechange", preventGesture)
       window.removeEventListener("gestureend", preventGesture)
     }
-  }, [zoomToward, updateTransform, screenToWorld, latchNeighbors, focusNode])
+  }, [zoomToward, updateTransform, screenToWorld, latchNeighbors, focusNode, isPrivacy])
 
   // ── Keyboard Shortcuts ───────────────────────────────────────
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isPrivacy) return
+
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
@@ -932,7 +990,18 @@ export default function App() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [zoomIn, zoomOut, fitAll, togglePhysics])
+  }, [zoomIn, zoomOut, fitAll, togglePhysics, isPrivacy])
+
+  const normalizedPath = pathname.replace(/\/+$/, "") || "/"
+
+  if (normalizedPath === "/privacy-policy") {
+    return <PrivacyPolicyDirectory onNavigate={navigate} />
+  }
+
+  if (normalizedPath.startsWith("/privacy-policy/")) {
+    const slug = normalizedPath.replace(/^\/privacy-policy\//, "")
+    return <PrivacyPolicyView slug={slug} onNavigate={navigate} />
+  }
 
   return (
     <div

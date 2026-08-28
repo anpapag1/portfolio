@@ -1,0 +1,249 @@
+{
+  "policies": [
+    {
+      "slug": "fairs",
+      "appName": "Fairs",
+      "tagline": "Group Expense & Bill Splitting Mobile App",
+      "category": "Mobile Application",
+      "url": "https://github.com/anpapag1/fairs",
+      "color": "#B953D3",
+      "lastUpdated": "February 2025",
+      "contactEmail": "antony.papage@gmail.com",
+      "languages": {
+        "en": {
+          "title": "Fairs Privacy Policy",
+          "tagline": "Group Expense & Bill Splitting Mobile App",
+          "summary": "Fairs is designed with a privacy-first, offline-first philosophy. We do not sell, rent, or monetize your personal data. This policy outlines how data is handled when using Fairs.",
+          "sections": [
+            {
+              "title": "1. Information We Collect",
+              "content": "Fairs operates primarily on your device. Depending on how you use the app, the following information may be processed:",
+              "list": [
+                "Local Expense Data: Group names, participant names/nicknames, transaction amounts, dates, and category tags stored locally on your device.",
+                "Device & Technical Data: Basic non-personally identifiable diagnostic information (such as operating system version and crash reports) if enabled on your device.",
+                "Optional Account Information: If cloud synchronization is enabled in future releases, basic account identifiers (such as email) used strictly for authentication."
+              ]
+            },
+            {
+              "title": "2. How We Use Information",
+              "content": "Any data processed by Fairs is strictly used for:",
+              "list": [
+                "Calculating and balancing debts and expenses among group members.",
+                "Maintaining your transaction history and currency conversions.",
+                "Improving app performance, stability, and fixing software crashes."
+              ]
+            },
+            {
+              "title": "3. Data Storage & Security",
+              "content": "Your expense entries and group configurations are saved in your device's local sandboxed storage. We implement standard security practices to safeguard all local data. You can erase all data at any time by clearing the app data or uninstalling the application."
+            },
+            {
+              "title": "4. Third-Party Services",
+              "content": "Fairs may rely on minimal third-party developer tools (such as Expo and platform app stores for delivery and updates). These services operate under their own privacy policies."
+            },
+            {
+              "title": "5. Children's Privacy",
+              "content": "Fairs does not knowingly collect or solicit any personally identifiable information from children under 13. If you believe a child has provided us with personal information, please contact us."
+            },
+            {
+              "title": "6. Changes to This Privacy Policy",
+              "content": "We may update our Privacy Policy periodically to reflect changes in app features or legal requirements. Updates will be published on this page with an updated 'Last Updated' date."
+            },
+            {
+              "title": "7. Contact Us",
+              "content": "If you have questions, suggestions, or concerns regarding this Privacy Policy or your data, please contact Antonis Papageorgiou at antony.papage@gmail.com."
+            }
+          ]
+        },
+        "el": {
+          "title": "Πολιτική Απορρήτου Fairs",
+          "tagline": "Εφαρμογή Διαμοιρασμού Εξόδων & Λογαριασμών",
+          "summary": "Το Fairs είναι σχεδιασμένο με φιλοσοφία offline-first και σεβασμό στο ιδιωτικό απόρρητο. Δεν πωλούμε, δεν ενοικιάζουμε και δεν εκμεταλλευόμαστε εμπορικά τα προσωπικά σας δεδομένα.",
+          "sections": [
+            {
+              "title": "1. Πληροφορίες που Συλλέγουμε",
+              "content": "Το Fairs λειτουργεί κατά κύριο λόγο τοπικά στη συσκευή σας. Ανάλογα με τη χρήση, ενδέχεται να υποβληθούν σε επεξεργασία τα εξής:",
+              "list": [
+                "Τοπικά Δεδομένα Εξόδων: Ονόματα ομάδων, συμμετεχόντων, ποσά συναλλαγών, ημερομηνίες και κατηγορίες που αποθηκεύονται στη συσκευή σας.",
+                "Τεχνικά Δεδομένα Συσκευής: Βασικά ανώνυμα διαγνωστικά στοιχεία (όπως έκδοση λειτουργικού συστήματος και αναφορές σφαλμάτων).",
+                "Προαιρετικά Στοιχεία Λογαριασμού: Σε περίπτωση μελλοντικού συγχρονισμού στο cloud, βασικά στοιχεία ταυτοποίησης (π.χ. email)."
+              ]
+            },
+            {
+              "title": "2. Πώς Χρησιμοποιούμε τις Πληροφορίες",
+              "content": "Τα δεδομένα που επεξεργάζεται το Fairs χρησιμοποιούνται αποκλειστικά για:",
+              "list": [
+                "Τον υπολογισμό και τον διαμοιρασμό εξόδων μεταξύ των μελών της ομάδας.",
+                "Τη διατήρηση του ιστορικού συναλλαγών και τις μετατροπές νομισμάτων.",
+                "Τη βελτίωση της σταθερότητας και την επίλυση τεχνικών σφαλμάτων της εφαρμογής."
+              ]
+            },
+            {
+              "title": "3. Αποθήκευση & Ασφάλεια Δεδομένων",
+              "content": "Τα δεδομένα σας αποθηκεύονται στον ασφαλή τοπικό χώρο αποθήκευσης της συσκευής σας. Μπορείτε να διαγράψετε όλα τα δεδομένα ανά πάσα στιγμή κάνοντας εκκαθάριση δεδομένων εφαρμογής ή απεγκαθιστώντας την εφαρμογή."
+            },
+            {
+              "title": "4. Υπηρεσίες Τρίτων",
+              "content": "Το Fairs ενδέχεται να χρησιμοποιεί βασικά εργαλεία ανάπτυξης (όπως το Expo και τα επίσημα app stores). Αυτές οι υπηρεσίες λειτουργούν σύμφωνα με τις δικές τους πολιτικές απορρήτου."
+            },
+            {
+              "title": "5. Προστασία Ανηλίκων",
+              "content": "Το Fairs δεν συλλέγει εν γνώσει του προσωπικά δεδομένα από παιδιά κάτω των 13 ετών."
+            },
+            {
+              "title": "6. Αλλαγές στην Πολιτική Απορρήτου",
+              "content": "Ενδέχεται να ενημερώνουμε την παρούσα Πολιτική Απορρήτου περιοδικά. Οι ενημερώσεις θα δημοσιεύονται σε αυτήν τη σελίδα."
+            },
+            {
+              "title": "7. Επικοινωνία",
+              "content": "Για ερωτήσεις ή διευκρινίσεις σχετικά με την Πολιτική Απορρήτου, μπορείτε να επικοινωνήσετε στο antony.papage@gmail.com."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "slug": "kommpad",
+      "appName": "KommPad",
+      "tagline": "Custom 4-Key Macro Pad Hardware & Firmware",
+      "category": "Hardware & Firmware",
+      "url": "https://github.com/anpapag1/kommpad",
+      "color": "#fb923c",
+      "lastUpdated": "February 2025",
+      "contactEmail": "antony.papage@gmail.com",
+      "languages": {
+        "en": {
+          "title": "KommPad Privacy Policy",
+          "tagline": "Custom 4-Key Macro Pad Hardware & Firmware",
+          "summary": "KommPad is open-source hardware and firmware. KommPad does not collect, transmit, or store any personal information over the internet.",
+          "sections": [
+            {
+              "title": "1. Zero Telemetry & Data Collection",
+              "content": "The KommPad firmware and companion deej configuration run entirely offline over direct USB serial communication between your micro-controller (e.g. Arduino Pro Micro/RP2040) and host machine. No telemetry, keystroke logging, analytics, or background tracking mechanisms are included."
+            },
+            {
+              "title": "2. Keystroke & Macro Processing",
+              "content": "Keypress events and potentiometer volume readings are translated into HID keystrokes or serial messages locally on the hardware controller and sent directly to your operating system."
+            },
+            {
+              "title": "3. Third-Party Services",
+              "content": "KommPad does not connect to or communicate with any cloud servers or third-party APIs."
+            },
+            {
+              "title": "4. Contact Us",
+              "content": "For inquiries or support regarding KommPad firmware and hardware design, contact Antonis Papageorgiou at antony.papage@gmail.com or via GitHub at github.com/anpapag1/kommpad."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "slug": "er-tool",
+      "appName": "ER Tool",
+      "tagline": "Browser-Based Entity-Relationship Diagram Editor",
+      "category": "Web Application",
+      "url": "https://github.com/anpapag1/er-tool",
+      "color": "#4ade80",
+      "lastUpdated": "February 2025",
+      "contactEmail": "antony.papage@gmail.com",
+      "languages": {
+        "en": {
+          "title": "ER Tool Privacy Policy",
+          "tagline": "Browser-Based Entity-Relationship Diagram Editor",
+          "summary": "ER Tool provides client-side ER diagram modeling. All diagram creation, layout calculations, and exports occur directly within your web browser.",
+          "sections": [
+            {
+              "title": "1. Diagram Data & Storage",
+              "content": "Your diagram entities, attributes, relationships, and layout configurations are stored locally in your browser's LocalStorage or encoded into the URL hash for shareable links. No diagram content is transmitted to or stored on our servers."
+            },
+            {
+              "title": "2. Analytics & Cookies",
+              "content": "ER Tool does not use advertising cookies. Basic anonymous website traffic metrics (e.g. Cloudflare Analytics) may be collected solely to measure aggregate site performance and bandwidth usage."
+            },
+            {
+              "title": "3. Sharing Diagrams",
+              "content": "When you generate a share link, diagram data is serialized into the URL hash fragment (`#...`). Hash fragments are handled client-side and are not transmitted to web servers in HTTP request headers."
+            },
+            {
+              "title": "4. Contact Us",
+              "content": "For feedback or inquiries regarding ER Tool, please reach out to antony.papage@gmail.com."
+            }
+          ]
+        },
+        "el": {
+          "title": "Πολιτική Απορρήτου ER Tool",
+          "tagline": "Browser-Based Επεξεργαστής Διαγραμμάτων Οντοτήτων-Συσχετίσεων",
+          "summary": "Το ER Tool παρέχει σχεδίαση διαγραμμάτων ER αποκλειστικά στον browser (client-side). Όλοι οι υπολογισμοί και οι εξαγωγές γίνονται απευθείας στη συσκευή σας.",
+          "sections": [
+            {
+              "title": "1. Δεδομένα Διαγραμμάτων & Αποθήκευση",
+              "content": "Οι οντότητες, τα γνωρίσματα και οι συσχετίσεις αποθηκεύονται τοπικά στο LocalStorage του φυλλομετρητή σας ή κωδικοποιούνται στο hash του URL για διαμοιρασμό συνδέσμων. Κανένα διάγραμμα δεν αποστέλλεται σε εξωτερικό server."
+            },
+            {
+              "title": "2. Analytics & Cookies",
+              "content": "Το ER Tool δεν χρησιμοποιεί διαφημιστικά cookies. Ενδέχεται να συλλέγονται βασικά ανώνυμα συγκεντρωτικά στατιστικά επισκεψιμότητας για μέτρηση επιδόσεων."
+            },
+            {
+              "title": "3. Διαμοιρασμός Διαγραμμάτων",
+              "content": "Κατά τη δημιουργία συνδέσμου κοινοποίησης, τα δεδομένα του διαγράμματος κωδικοποιούνται στο hash fragment (`#...`) του URL το οποίο επεξεργάζεται τοπικά ο browser."
+            },
+            {
+              "title": "4. Επικοινωνία",
+              "content": "Για σχόλια ή απορίες σχετικά με το ER Tool, επικοινωνήστε στο antony.papage@gmail.com."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "slug": "relay",
+      "appName": "Relay",
+      "tagline": "WordPress Migration & Staging Tool",
+      "category": "Developer Tool",
+      "url": "https://github.com/anpapag1/relay",
+      "color": "#ff0000",
+      "lastUpdated": "February 2025",
+      "contactEmail": "antony.papage@gmail.com",
+      "languages": {
+        "en": {
+          "title": "Relay Privacy Policy",
+          "tagline": "WordPress Migration & Staging Tool",
+          "summary": "Relay facilitates WordPress migrations and environment synchronizations. Your database credentials, files, and server connections remain strictly within your designated hosting environments.",
+          "sections": [
+            {
+              "title": "1. Credential & Server Data",
+              "content": "Relay processes database connection strings and migration instructions only between the source and target endpoints you configure. Credentials are not sent to any centralized service or third-party tracker."
+            },
+            {
+              "title": "2. Telemetry",
+              "content": "Relay does not harvest database records, user lists, or uploaded media. Operations are performed locally or via direct SSH/API links established by you."
+            },
+            {
+              "title": "3. Contact Us",
+              "content": "For technical support or inquiries, please contact antony.papage@gmail.com."
+            }
+          ]
+        },
+        "el": {
+          "title": "Πολιτική Απορρήτου Relay",
+          "tagline": "Εργαλείο Μεταφοράς & Συγχρονισμού WordPress",
+          "summary": "Το Relay διευκολύνει μεταφορές και συγχρονισμούς ιστοσελίδων WordPress. Τα διαπιστευτήρια βάσης δεδομένων και τα αρχεία σας παραμένουν αποκλειστικά στα δικά σας περιβάλλοντα φιλοξενίας.",
+          "sections": [
+            {
+              "title": "1. Δεδομένα Διαπιστευτηρίων & Servers",
+              "content": "Το Relay επεξεργάζεται στοιχεία σύνδεσης μόνο μεταξύ του αρχικού και τελικού server που ορίζετε εσείς. Τα διαπιστευτήρια δεν αποστέλλονται ποτέ σε κεντρικό server τρίτων."
+            },
+            {
+              "title": "2. Τηλεμετρία",
+              "content": "Το Relay δεν συλλέγει εγγραφές βάσης δεδομένων, λίστες χρηστών ή αρχεία πολυμέσων. Οι ενέργειες εκτελούνται τοπικά ή μέσω απευθείας συνδέσεων SSH/API."
+            },
+            {
+              "title": "3. Επικοινωνία",
+              "content": "Για τεχνική υποστήριξη ή ερωτήσεις, επικοινωνήστε στο antony.papage@gmail.com."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

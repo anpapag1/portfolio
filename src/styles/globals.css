@@ -37,6 +37,33 @@ body {
   display: none;
 }
 
+/* Policy page dedicated scroll container */
+.policy-scroll {
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.policy-scroll::-webkit-scrollbar {
+  display: block !important;
+  width: 6px;
+}
+
+.policy-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.policy-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+}
+
+.policy-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+
 /* Canvas dot grid background */
 .canvas-bg {
   background-image: radial-gradient(
@@ -225,3 +252,85 @@ body {
     touch-action: none;
   }
 }
+
+/* ── Print Styles ────────────────────────────────────────── */
+@media print {
+  @page {
+    margin: 1.8cm 1.5cm;
+    size: auto;
+  }
+
+  html,
+  body,
+  #root {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #18181b !important;
+    position: static !important;
+    touch-action: auto !important;
+    user-select: text !important;
+  }
+
+  .policy-scroll {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #18181b !important;
+    padding: 0 !important;
+  }
+
+  .policy-scroll h1,
+  .policy-scroll h2,
+  .policy-scroll h3 {
+    color: #09090b !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .policy-scroll p,
+  .policy-scroll li,
+  .policy-scroll span,
+  .policy-scroll div {
+    color: #27272a !important;
+  }
+
+  .policy-scroll a {
+    color: #09090b !important;
+    text-decoration: underline !important;
+  }
+
+  .policy-scroll section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .policy-scroll .border,
+  .policy-scroll .border-t,
+  .policy-scroll .border-b,
+  .policy-scroll .border-l-4 {
+    border-color: #e4e4e7 !important;
+  }
+
+  .policy-scroll .bg-zinc-900\/40,
+  .policy-scroll .bg-zinc-900\/60,
+  .policy-scroll .bg-zinc-800 {
+    background-color: #f4f4f5 !important;
+    border-color: #e4e4e7 !important;
+  }
+
+  /* Hide screen-only interactive elements during print */
+  header,
+  nav,
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+}
+

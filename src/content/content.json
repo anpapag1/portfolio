@@ -1,0 +1,236 @@
+{
+  "nodes": [
+    {
+      "id": "profile",
+      "label": "PROFILE",
+      "color": "#4ade80",
+      "width": 320,
+      "height": 240,
+      "content": {
+        "name": "Antonis Papageorgiou",
+        "title": "CS Student & Developer",
+        "subtitle": "",
+        "location": "Kavala / Athens, Greece",
+        "bio": "CS undergrad at DUTH building custom hardware, firmware, and web apps. When I'm not designing macro pads or writing C++, I compete in ICPC and build software at Crowdpolicy."
+      }
+    },
+    {
+      "id": "skills",
+      "label": "SKILLS",
+      "color": "#a78bfa",
+      "width": 330,
+      "height": 280,
+      "content": {
+        "groups": [
+          {
+            "label": "Languages",
+            "items": ["C++", "Arduino C", "Python", "JavaScript", "React", "React Native", "HTML/CSS"]
+          },
+          {
+            "label": "Hardware & Embedded",
+            "items": ["Arduino", "PCB Design", "IoT", "Home Automation", "Drones"]
+          },
+          {
+            "label": "Design & 3D",
+            "items": ["3D Modeling", "UI/UX Design", "Graphic Design"]
+          },
+          {
+            "label": "Languages (Spoken)",
+            "items": ["Greek (Native)", "English (C2)"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "websites",
+      "label": "WEBSITES",
+      "color": "#4ade80",
+      "width": 300,
+      "height": 300,
+      "content": {
+        "links": [
+          {
+            "label": "Portfolio",
+            "url": "kommwtria.com",
+            "sub": "Personal website",
+            "icon": "favicon.png"
+          },
+          {
+            "label": "Relay",
+            "url": "relay.kommwtria.com",
+            "sub": "WordPress migration tool",
+            "icon": "relay_logo.png"
+          },
+          {
+            "label": "ER Tool",
+            "url": "er.kommwtria.com",
+            "sub": "ER diagram editor",
+            "icon": "er_logo.png"
+          }
+        ]
+      }
+    },
+    {
+      "id": "projects",
+      "label": "PROJECTS",
+      "color": "#fb923c",
+      "width": 360,
+      "height": 430,
+      "content": {
+        "items": [
+          {
+            "name": "KommPad",
+            "desc": "Custom 4-key macro pad with bespoke PCB, 3D printed chassis, and Arduino C++ firmware with deej audio control.",
+            "tags": ["Arduino", "C++", "PCB Design", "3D Print"],
+            "year": "2024",
+            "stars": "Hardware",
+            "github": "https://github.com/anpapag1/kommpad"
+          },
+          {
+            "name": "ER Tool",
+            "desc": "Browser-based ER diagram editor with Chen notation, physics auto-layout, and URL-hash diagram sharing.",
+            "tags": ["React", "JavaScript", "Web UI"],
+            "year": "2024",
+            "stars": "Web",
+            "github": "https://github.com/anpapag1/er-tool"
+          },
+          {
+            "name": "Fairs",
+            "desc": "Mobile expense and bill splitting app for group trips and events with offline balance tracking.",
+            "tags": ["React Native", "Expo", "UI/UX"],
+            "year": "2024",
+            "stars": "Mobile",
+            "github": "https://github.com/anpapag1/fairs"
+          },
+          {
+            "name": "Relay",
+            "desc": "Automated WordPress site migration and staging sync tool without manual database exports.",
+            "tags": ["React", "TypeScript", "Tooling"],
+            "year": "2023",
+            "stars": "Tool",
+            "github": "https://github.com/anpapag1/relay"
+          }
+        ]
+      }
+    },
+    {
+      "id": "education",
+      "label": "EDUCATION",
+      "color": "#38bdf8",
+      "width": 330,
+      "height": 230,
+      "content": {
+        "education": [
+          {
+            "degree": "B.Sc. in Computer Science",
+            "school": "Democritus University of Thrace",
+            "location": "Kavala, Greece",
+            "period": "2023 — 2026 (exp.)",
+            "desc": "Computer Science degree focusing on systems programming, data structures, and computer architecture.",
+            "highlights": ["Software Dev", "Embedded Systems", "Algorithms", "IoT"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "work",
+      "label": "EXPERIENCE",
+      "color": "#f472b6",
+      "width": 330,
+      "height": 270,
+      "content": {
+        "positions": [
+          {
+            "company": "Crowdpolicy",
+            "role": "Developer / Collaborator",
+            "period": "2024 — Present",
+            "desc": "Building full-stack web applications, civic tech platforms, and digital innovation projects."
+          },
+          {
+            "company": "Campus Tour Guide",
+            "role": "Volunteer",
+            "period": "2023 — Present",
+            "desc": "Led university CS department tours for visiting high school students."
+          }
+        ]
+      }
+    },
+    {
+      "id": "competitions",
+      "label": "COMPETITIONS & AWARDS",
+      "color": "#e879f9",
+      "width": 350,
+      "height": 420,
+      "content": {
+        "categories": [
+          {
+            "title": "Awards",
+            "items": [
+              {
+                "name": "5th Panhellenic Scratch Competition",
+                "sub": "National Game Dev Contest",
+                "badge": "1st Place",
+                "year": "2020"
+              }
+            ]
+          },
+          {
+            "title": "Competitive Programming",
+            "items": [
+              { "name": "ICPC", "year": "2024" },
+              { "name": "GRCPC", "year": "2025" },
+              { "name": "SEERC", "year": "2025" }
+            ]
+          },
+          {
+            "title": "Hackathons",
+            "items": [
+              { "name": "2nd AI Hackathon Greece", "sub": "ACEin AUEB", "year": "2024" },
+              { "name": "NASA Space Apps Challenge", "year": "2024" },
+              { "name": "EESTech Challenge", "sub": "AI Applications", "year": "2024" },
+              { "name": "Univators", "year": "2024" }
+            ]
+          },
+          {
+            "title": "Certifications",
+            "items": [
+              { "name": "Cisco: Networking Basics", "year": "2025" },
+              { "name": "Cisco: Devices & Initial Config", "year": "2025" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "contact",
+      "label": "CONTACT",
+      "color": "#fbbf24",
+      "width": 290,
+      "height": 270,
+      "content": {
+        "channels": [
+          {
+            "label": "Email",
+            "value": "antony.papage@gmail.com",
+            "href": "mailto:antony.papage@gmail.com"
+          },
+          {
+            "label": "Phone",
+            "value": "+30 6988002664",
+            "href": "tel:+306988002664"
+          },
+          {
+            "label": "GitHub",
+            "value": "github.com/anpapag1",
+            "href": "https://github.com/anpapag1"
+          },
+          {
+            "label": "LinkedIn",
+            "value": "Antonis Papageorgiou",
+            "href": "https://www.linkedin.com/in/antonis-papageorgiou"
+          }
+        ]
+      }
+    }
+  ]
+}

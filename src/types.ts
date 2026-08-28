@@ -9,3 +9,36 @@ export interface NodeData {
   type?: "skills" | "websites" | "projects" | "work" | "contact" | "profile" | string
   content: any
 }
+
+export interface PolicySection {
+  title: string
+  content?: string | string[]
+  list?: string[]
+}
+
+export interface PolicyLanguageContent {
+  title?: string
+  tagline?: string
+  summary?: string
+  sections: PolicySection[]
+}
+
+export interface AppPrivacyPolicy {
+  slug: string
+  appName: string
+  tagline?: string
+  lastUpdated: string
+  contactEmail: string
+  url?: string
+  publisher?: string
+  website?: string
+  category?: string
+  color?: string
+  accentColor?: string
+  summary?: string
+  sections?: PolicySection[]
+  languages?: Record<string, PolicyLanguageContent>
+}
+
+
+
