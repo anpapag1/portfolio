@@ -17,23 +17,23 @@ export function GenericCard({ node }: { node: NodeData }) {
     <div style={{ padding: "20px" }}>
       <CardLabel node={node} />
       {title && (
-        <div style={{ fontSize: 14, fontWeight: 500, color: "#d4d4d4", marginBottom: 2 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", marginBottom: 2 }}>
           {title}
         </div>
       )}
       {subtitle && (
-        <div className="mono" style={{ fontSize: 10, color: "#636363", marginBottom: 8 }}>
+        <div className="mono" style={{ fontSize: 10, color: "var(--text-secondary)", marginBottom: 8 }}>
           {subtitle}
         </div>
       )}
       {description && (
-        <p style={{ fontSize: 11, color: "#5a5a5a", lineHeight: 1.6, margin: "0 0 10px" }}>
+        <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6, margin: "0 0 10px" }}>
           {description}
         </p>
       )}
       {entries.map(([key, val]) => (
         <div key={key} style={{ marginTop: 8 }}>
-          <div className="mono" style={{ fontSize: 9, color: "#484848", letterSpacing: "0.1em" }}>
+          <div className="mono" style={{ fontSize: 9, color: "var(--text-subtle)", letterSpacing: "0.1em", fontWeight: 500 }}>
             {key.toUpperCase()}
           </div>
           {Array.isArray(val) ? (
@@ -45,11 +45,11 @@ export function GenericCard({ node }: { node: NodeData }) {
               ))}
             </div>
           ) : typeof val === "object" && val !== null ? (
-            <div className="mono" style={{ fontSize: 10, color: "#888", marginTop: 2 }}>
+            <div className="mono" style={{ fontSize: 10, color: "var(--text-secondary)", marginTop: 2 }}>
               {JSON.stringify(val)}
             </div>
           ) : (
-            <div style={{ fontSize: 11, color: "#b8b8b8", marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: "var(--text-primary)", marginTop: 2 }}>
               {String(val)}
             </div>
           )}

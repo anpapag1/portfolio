@@ -22,7 +22,7 @@ export function ContactCard({ node }: { node: NodeData }) {
       <p
         style={{
           fontSize: 11,
-          color: "#525252",
+          color: "var(--text-muted)",
           lineHeight: 1.6,
           margin: "0 0 14px",
         }}
@@ -43,12 +43,12 @@ export function ContactCard({ node }: { node: NodeData }) {
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "8px 0",
-                borderBottom: "1px solid rgba(255,255,255,0.05)",
+                borderBottom: "1px solid var(--border-subtle)",
                 textDecoration: "none",
                 cursor: "pointer",
                 transition: "opacity 0.15s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.6")}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
               onClick={(e) => e.stopPropagation()}
               onMouseDown={(e) => e.stopPropagation()}
@@ -56,7 +56,7 @@ export function ContactCard({ node }: { node: NodeData }) {
               <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
                 <span
                   style={{
-                    color: "#a0a0a0",
+                    color: "var(--text-secondary)",
                     display: "flex",
                     alignItems: "center",
                     flexShrink: 0,
@@ -69,8 +69,9 @@ export function ContactCard({ node }: { node: NodeData }) {
                     className="mono"
                     style={{
                       fontSize: 8.5,
-                      color: "#484848",
+                      color: "var(--text-subtle)",
                       letterSpacing: "0.08em",
+                      fontWeight: 500,
                     }}
                   >
                     {ch.label.toUpperCase()}
@@ -78,8 +79,8 @@ export function ContactCard({ node }: { node: NodeData }) {
                   <div
                     style={{
                       fontSize: 12,
-                      color: "#c0c0c0",
-                      fontWeight: 450,
+                      color: "var(--text-primary)",
+                      fontWeight: 500,
                       marginTop: 1,
                     }}
                   >
@@ -87,7 +88,7 @@ export function ContactCard({ node }: { node: NodeData }) {
                   </div>
                 </div>
               </div>
-              <span style={{ fontSize: 10.5, color: "#3e3e3e" }}>↗</span>
+              <span style={{ fontSize: 10.5, color: "var(--text-subtle)" }}>↗</span>
             </a>
           ),
         )}

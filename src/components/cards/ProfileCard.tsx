@@ -14,17 +14,17 @@ export function ProfileCard({ node }: { node: NodeData }) {
       <CardLabel node={node} />
       
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 15, fontWeight: 600, color: "#ececec", letterSpacing: "-0.01em" }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
           {name}
         </div>
-        <div className="mono" style={{ fontSize: 9.5, color: "#737373", marginTop: 2 }}>
+        <div className="mono" style={{ fontSize: 9.5, color: "var(--text-secondary)", marginTop: 2 }}>
           {title}
-          {location && <span style={{ color: "#484848" }}> · {location}</span>}
+          {location && <span style={{ color: "var(--text-subtle)" }}> · {location}</span>}
         </div>
       </div>
 
       {bio && (
-        <p style={{ fontSize: 11, color: "#666", lineHeight: 1.65, margin: "0 0 14px" }}>
+        <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.65, margin: "0 0 14px" }}>
           {bio}
         </p>
       )}
@@ -37,8 +37,8 @@ export function ProfileCard({ node }: { node: NodeData }) {
             gap: 7,
             padding: "5px 9px",
             borderRadius: 6,
-            background: "rgba(74, 222, 128, 0.06)",
-            border: "1px solid rgba(74, 222, 128, 0.16)",
+            background: "rgba(74, 222, 128, 0.08)",
+            border: "1px solid rgba(74, 222, 128, 0.25)",
           }}
         >
           <span
@@ -51,7 +51,7 @@ export function ProfileCard({ node }: { node: NodeData }) {
               flexShrink: 0,
             }}
           />
-          <span className="mono" style={{ fontSize: 9, color: "#86efac" }}>
+          <span className="mono text-emerald-600 dark:text-[#86efac]" style={{ fontSize: 9, fontWeight: 600 }}>
             {statusText}
           </span>
         </div>

@@ -23,7 +23,7 @@ export function WorkCard({ node }: { node: NodeData }) {
             marginBottom: i < positions.length - 1 ? 14 : 0,
             borderBottom:
               i < positions.length - 1
-                ? "1px solid rgba(255,255,255,0.05)"
+                ? "1px solid var(--border-subtle)"
                 : "none",
           }}
         >
@@ -35,17 +35,17 @@ export function WorkCard({ node }: { node: NodeData }) {
               marginBottom: 2,
             }}
           >
-            <div style={{ fontSize: 13, fontWeight: 500, color: "#d4d4d4" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>
               {pos.company}
             </div>
-            <span className="mono" style={{ fontSize: 9, color: "#444" }}>
+            <span className="mono" style={{ fontSize: 9, color: "var(--text-subtle)" }}>
               {pos.period}
             </span>
           </div>
 
           <div
             className="mono"
-            style={{ fontSize: 9.5, color: "#666", marginBottom: 6 }}
+            style={{ fontSize: 9.5, color: "var(--text-secondary)", marginBottom: 6 }}
           >
             {pos.role}
           </div>
@@ -53,7 +53,7 @@ export function WorkCard({ node }: { node: NodeData }) {
           <p
             style={{
               fontSize: 11,
-              color: "#5a5a5a",
+              color: "var(--text-muted)",
               lineHeight: 1.6,
               margin: 0,
             }}

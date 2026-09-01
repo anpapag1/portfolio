@@ -52,16 +52,16 @@ export function PrivacyPolicyDirectory({ onNavigate }: PrivacyPolicyDirectoryPro
 
   return (
     <div
-      className="fixed inset-0 w-full h-full bg-[#09090b] text-zinc-200 select-text overflow-y-auto overscroll-contain font-sans policy-scroll p-4 md:p-12 z-50 antialiased"
+      className="fixed inset-0 w-full h-full bg-slate-50 dark:bg-[#09090b] text-slate-800 dark:text-zinc-200 select-text overflow-y-auto overscroll-contain font-sans policy-scroll p-4 md:p-12 z-50 antialiased transition-colors duration-200"
       style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
     >
       <div className="max-w-3xl mx-auto py-8 md:py-14">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
             Privacy Policies
           </h1>
-          <p className="text-sm sm:text-base text-zinc-400">
+          <p className="text-sm sm:text-base text-slate-600 dark:text-zinc-400">
             Official privacy policies, disclosures, and data governance practices across applications and services.
           </p>
 
@@ -69,20 +69,20 @@ export function PrivacyPolicyDirectory({ onNavigate }: PrivacyPolicyDirectoryPro
           <div className="mt-5 relative">
             <Search
               size={15}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500"
             />
             <input
               type="text"
               placeholder="Search policies..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-800 rounded-md pl-9 pr-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition-colors"
+              className="w-full bg-white/80 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 rounded-md pl-9 pr-4 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:border-slate-400 dark:focus:border-zinc-700 shadow-sm transition-colors"
             />
           </div>
         </div>
 
         {/* Policies List */}
-        <div className="divide-y divide-zinc-800 border border-zinc-800 rounded-lg bg-zinc-900/30 overflow-hidden shadow-sm">
+        <div className="divide-y divide-slate-200 dark:divide-zinc-800 border border-slate-200 dark:border-zinc-800 rounded-lg bg-white/70 dark:bg-zinc-900/30 overflow-hidden shadow-sm">
           {filtered.length > 0 ? (
             filtered.map((policy) => {
               const pColor = policy.color || policy.accentColor || "#38bdf8"
@@ -91,10 +91,10 @@ export function PrivacyPolicyDirectory({ onNavigate }: PrivacyPolicyDirectoryPro
                   key={policy.slug}
                   href={`/privacy-policy/${policy.slug}`}
                   onClick={(e) => handleSelectPolicy(policy.slug, e)}
-                  className="flex items-start sm:items-center justify-between p-4 sm:p-5 hover:bg-zinc-800/40 transition-colors group gap-4"
+                  className="flex items-start sm:items-center justify-between p-4 sm:p-5 hover:bg-slate-100/60 dark:hover:bg-zinc-800/40 transition-colors group gap-4"
                 >
                   <div className="flex items-start gap-3.5">
-                    <div className="p-2 rounded bg-zinc-800/60 text-zinc-400 group-hover:text-zinc-200 mt-0.5 sm:mt-0 transition-colors shrink-0 flex items-center justify-center">
+                    <div className="p-2 rounded bg-slate-100 dark:bg-zinc-800/60 text-slate-500 dark:text-zinc-400 group-hover:text-slate-900 dark:group-hover:text-zinc-200 mt-0.5 sm:mt-0 transition-colors shrink-0 flex items-center justify-center">
                       <FileText size={16} />
                     </div>
                     <div>
@@ -103,7 +103,7 @@ export function PrivacyPolicyDirectory({ onNavigate }: PrivacyPolicyDirectoryPro
                           className="w-2 h-2 rounded-full shrink-0"
                           style={{ backgroundColor: pColor }}
                         />
-                        <h2 className="font-semibold text-white group-hover:text-zinc-100 text-base">
+                        <h2 className="font-semibold text-slate-900 dark:text-white group-hover:text-slate-800 dark:group-hover:text-zinc-100 text-base">
                           {policy.appName}
                         </h2>
                         {policy.category && (
@@ -120,11 +120,11 @@ export function PrivacyPolicyDirectory({ onNavigate }: PrivacyPolicyDirectoryPro
                         )}
                       </div>
                       {(policy.tagline || policy.languages?.en?.tagline) && (
-                        <p className="text-xs text-zinc-400 mb-1">
+                        <p className="text-xs text-slate-600 dark:text-zinc-400 mb-1">
                           {policy.tagline || policy.languages?.en?.tagline}
                         </p>
                       )}
-                      <div className="flex flex-wrap items-center gap-x-2 text-xs text-zinc-500">
+                      <div className="flex flex-wrap items-center gap-x-2 text-xs text-slate-400 dark:text-zinc-500">
                         <span>Updated: {policy.lastUpdated}</span>
                         {policy.url && (
                           <>
@@ -140,21 +140,21 @@ export function PrivacyPolicyDirectory({ onNavigate }: PrivacyPolicyDirectoryPro
                     className="flex items-center gap-1 text-xs transition-colors shrink-0 pt-1 sm:pt-0"
                     style={{ color: pColor }}
                   >
-                    <span className="hidden sm:inline">View Policy</span>
+                    <span className="hidden sm:inline font-medium">View Policy</span>
                     <ChevronRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </a>
               )
             })
           ) : (
-            <div className="p-8 text-center text-sm text-zinc-500">
+            <div className="p-8 text-center text-sm text-slate-500 dark:text-zinc-500">
               No privacy policies found matching "{search}".
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="mt-12 pt-6 border-t border-zinc-800/80 text-center text-xs text-zinc-500">
+        <div className="mt-12 pt-6 border-t border-slate-200 dark:border-zinc-800/80 text-center text-xs text-slate-400 dark:text-zinc-500">
           &copy; {new Date().getFullYear()} All rights reserved.
         </div>
       </div>

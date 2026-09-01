@@ -24,7 +24,7 @@ export function EducationCard({ node }: { node: NodeData }) {
             paddingBottom: i < items.length - 1 ? 14 : 0,
             marginBottom: i < items.length - 1 ? 14 : 0,
             borderBottom:
-              i < items.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+              i < items.length - 1 ? "1px solid var(--border-subtle)" : "none",
           }}
         >
           <div
@@ -35,11 +35,11 @@ export function EducationCard({ node }: { node: NodeData }) {
               marginBottom: 3,
             }}
           >
-            <div style={{ fontSize: 13, fontWeight: 500, color: "#d4d4d4" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>
               {item.degree}
             </div>
             {item.period && (
-              <span className="mono" style={{ fontSize: 9, color: "#444" }}>
+              <span className="mono" style={{ fontSize: 9, color: "var(--text-subtle)" }}>
                 {item.period}
               </span>
             )}
@@ -47,7 +47,7 @@ export function EducationCard({ node }: { node: NodeData }) {
 
           <div
             className="mono"
-            style={{ fontSize: 9.5, color: "#666", marginBottom: 7 }}
+            style={{ fontSize: 9.5, color: "var(--text-secondary)", marginBottom: 7 }}
           >
             {item.school}
             {item.location && <span> · {item.location}</span>}
@@ -57,7 +57,7 @@ export function EducationCard({ node }: { node: NodeData }) {
             <p
               style={{
                 fontSize: 11,
-                color: "#5a5a5a",
+                color: "var(--text-muted)",
                 lineHeight: 1.6,
                 margin: "0 0 8px",
               }}

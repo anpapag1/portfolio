@@ -34,7 +34,7 @@ export function ProjectsCard({ node }: { node: NodeData }) {
               marginBottom: i < items.length - 1 ? 14 : 0,
               borderBottom:
                 i < items.length - 1
-                  ? "1px solid rgba(255,255,255,0.06)"
+                  ? "1px solid var(--border-subtle)"
                   : "none",
             }}
           >
@@ -57,28 +57,20 @@ export function ProjectsCard({ node }: { node: NodeData }) {
                   rel="noopener noreferrer"
                   style={{
                     fontSize: 13,
-                    fontWeight: 500,
-                    color: "#d4d4d4",
+                    fontWeight: 600,
+                    color: "var(--text-primary)",
                     textDecoration: "none",
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 4,
                     cursor: "pointer",
-                    transition: "color 0.15s ease",
+                    transition: "opacity 0.15s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "#ffffff"
-                    const arrow = e.currentTarget.querySelector(
-                      ".proj-arrow",
-                    ) as HTMLElement | null
-                    if (arrow) arrow.style.color = "#999"
+                    e.currentTarget.style.opacity = "0.7"
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "#d4d4d4"
-                    const arrow = e.currentTarget.querySelector(
-                      ".proj-arrow",
-                    ) as HTMLElement | null
-                    if (arrow) arrow.style.color = "#484848"
+                    e.currentTarget.style.opacity = "1"
                   }}
                 >
                   <span>{p.name}</span>
@@ -86,7 +78,7 @@ export function ProjectsCard({ node }: { node: NodeData }) {
                     className="proj-arrow"
                     style={{
                       fontSize: 10.5,
-                      color: "#484848",
+                      color: "var(--text-subtle)",
                       transition: "color 0.15s ease",
                     }}
                   >
@@ -95,19 +87,19 @@ export function ProjectsCard({ node }: { node: NodeData }) {
                 </a>
               ) : (
                 <span
-                  style={{ fontSize: 13, fontWeight: 500, color: "#d4d4d4" }}
+                  style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}
                 >
                   {p.name}
                 </span>
               )}
-              <span className="mono" style={{ fontSize: 9, color: "#444" }}>
+              <span className="mono" style={{ fontSize: 9, color: "var(--text-subtle)" }}>
                 {p.year}
               </span>
             </div>
             <p
               style={{
                 fontSize: 11,
-                color: "#5a5a5a",
+                color: "var(--text-muted)",
                 lineHeight: 1.6,
                 margin: "0 0 7px",
               }}
@@ -130,7 +122,7 @@ export function ProjectsCard({ node }: { node: NodeData }) {
               {p.stars && (
                 <span
                   className="mono"
-                  style={{ fontSize: 9, color: "#3e3e3e", marginLeft: "auto" }}
+                  style={{ fontSize: 9, color: "var(--text-subtle)", marginLeft: "auto" }}
                 >
                   ★ {p.stars}
                 </span>

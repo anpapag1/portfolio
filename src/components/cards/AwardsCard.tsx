@@ -26,7 +26,7 @@ export function AwardsCard({ node }: { node: NodeData }) {
             paddingBottom: i < categories.length - 1 ? 12 : 0,
             borderBottom:
               i < categories.length - 1
-                ? "1px solid rgba(255,255,255,0.05)"
+                ? "1px solid var(--border-subtle)"
                 : "none",
           }}
         >
@@ -34,9 +34,10 @@ export function AwardsCard({ node }: { node: NodeData }) {
             className="mono"
             style={{
               fontSize: 9,
-              color: "#525252",
+              color: "var(--text-secondary)",
               letterSpacing: "0.12em",
               marginBottom: 7,
+              fontWeight: 500,
             }}
           >
             {cat.title.toUpperCase()}
@@ -54,13 +55,13 @@ export function AwardsCard({ node }: { node: NodeData }) {
                 }}
               >
                 <div style={{ minWidth: 0 }}>
-                  <span style={{ fontSize: 12, color: "#c8c8c8", fontWeight: 400 }}>
+                  <span style={{ fontSize: 12, color: "var(--text-primary)", fontWeight: 500 }}>
                     {item.name}
                   </span>
                   {item.sub && (
                     <span
                       className="mono"
-                      style={{ fontSize: 9, color: "#484848", marginLeft: 6 }}
+                      style={{ fontSize: 9, color: "var(--text-secondary)", marginLeft: 6 }}
                     >
                       · {item.sub}
                     </span>
@@ -71,12 +72,13 @@ export function AwardsCard({ node }: { node: NodeData }) {
                     className="mono"
                     style={{
                       fontSize: 8.5,
-                      color: "#fbbf24",
-                      background: "rgba(251, 191, 36, 0.08)",
-                      border: "1px solid rgba(251, 191, 36, 0.2)",
+                      color: "#d97706",
+                      background: "rgba(251, 191, 36, 0.12)",
+                      border: "1px solid rgba(251, 191, 36, 0.3)",
                       padding: "1px 5px",
                       borderRadius: 3,
                       flexShrink: 0,
+                      fontWeight: 600,
                     }}
                   >
                     {item.badge}
@@ -85,7 +87,7 @@ export function AwardsCard({ node }: { node: NodeData }) {
                 {item.year && !item.badge && (
                   <span
                     className="mono"
-                    style={{ fontSize: 9, color: "#444", flexShrink: 0 }}
+                    style={{ fontSize: 9, color: "var(--text-subtle)", flexShrink: 0 }}
                   >
                     {item.year}
                   </span>

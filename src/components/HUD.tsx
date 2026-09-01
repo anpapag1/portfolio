@@ -7,17 +7,23 @@ import {
   Pause,
   ChevronDown,
   ChevronUp,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react"
 import type { NodeData, Bond } from "../types"
+import type { Theme } from "../hooks/useTheme"
 
 interface HUDProps {
   nodes: NodeData[]
   profile: NodeData
   bonds: Bond[]
   isPaused: boolean
+  theme?: Theme
   isMobile?: boolean
   isCollapsed?: boolean
   onExpand?: () => void
+  onToggleTheme?: () => void
   minimapRef: React.RefObject<HTMLCanvasElement>
   onFocusNode: (id: string) => void
   onZoomIn: () => void
@@ -30,9 +36,11 @@ export function HUD({
   nodes,
   profile,
   isPaused,
+  theme = "system",
   isMobile = false,
   isCollapsed = false,
   onExpand,
+  onToggleTheme,
   minimapRef,
   onFocusNode,
   onZoomIn,
@@ -54,8 +62,6 @@ export function HUD({
           <div
             className="hud-panel p-3.5 flex flex-col transition-all duration-200 ease-out shadow-2xl"
             style={{
-              backdropFilter: "blur(40px)",
-              WebkitBackdropFilter: "blur(40px)",
               borderRadius: 20,
             }}
           >
@@ -66,7 +72,7 @@ export function HUD({
             >
               <div className="flex-1 min-w-0 pr-2">
                 <div className="flex items-center gap-1.5 mb-1">
-                  <span className="mono text-[8.5px] tracking-[0.16em] text-[#555]">
+                  <span className="mono text-[8.5px] tracking-[0.16em] text-[var(--text-subtle)] font-medium">
                     {profile.label || "PROFILE"}
                   </span>
                   <span
@@ -74,40 +80,69 @@ export function HUD({
                     style={{ background: profile.color || "#4ade80" }}
                   />
                 </div>
-                <div className="text-[14.5px] font-medium text-[#e5e5e5] leading-tight tracking-[-0.01em] truncate">
+                <div className="text-[14.5px] font-semibold text-[var(--text-primary)] leading-tight tracking-[-0.01em] truncate">
                   {p.name}
                 </div>
-                <div className="mono text-[9.5px] text-[#737373] mt-0.5 truncate">
+                <div className="mono text-[9.5px] text-[var(--text-secondary)] mt-0.5 truncate">
                   {p.title}
                   {p.location && (
-                    <span className="text-[#484848]"> · {p.location}</span>
+                    <span className="text-[var(--text-subtle)]"> · {p.location}</span>
                   )}
                 </div>
               </div>
 
-              {/* Chevron Toggle Button */}
-              <button
-                type="button"
-                className="w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[#888] hover:text-[#eee] transition-colors flex-shrink-0 cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setProfileExpanded((ex) => !ex)
-                }}
-                aria-label={profileExpanded ? "Collapse Bio" : "Expand Bio"}
-              >
-                {profileExpanded ? (
-                  <ChevronUp size={14} />
-                ) : (
-                  <ChevronDown size={14} />
+              {/* Action buttons on mobile profile header */}
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                {onToggleTheme && (
+                  <button
+                    type="button"
+                    className="icon-btn !w-7 !h-7 rounded-full"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onToggleTheme()
+                    }}
+                    title={
+                      theme === "system"
+                        ? "Theme: Device Mode (Auto)"
+                        : theme === "light"
+                        ? "Theme: Light"
+                        : "Theme: Dark"
+                    }
+                    aria-label="Toggle Theme"
+                  >
+                    {theme === "system" ? (
+                      <Monitor size={13} />
+                    ) : theme === "light" ? (
+                      <Sun size={13} />
+                    ) : (
+                      <Moon size={13} />
+                    )}
+                  </button>
                 )}
-              </button>
+                {/* Chevron Toggle Button */}
+                <button
+                  type="button"
+                  className="icon-btn !w-7 !h-7 rounded-full"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setProfileExpanded((ex) => !ex)
+                  }}
+                  aria-label={profileExpanded ? "Collapse Bio" : "Expand Bio"}
+                >
+                  {profileExpanded ? (
+                    <ChevronUp size={14} />
+                  ) : (
+                    <ChevronDown size={14} />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Expanded Content Dropdown */}
             {profileExpanded && !isCollapsed && (
-              <div className="mt-2.5 pt-2.5 border-t border-white/[0.06] animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="mt-2.5 pt-2.5 border-t border-[var(--border-subtle)] animate-in fade-in slide-in-from-top-1 duration-150">
                 {p.bio && (
-                  <p className="text-[11px] text-[#737373] leading-[1.6] m-0">
+                  <p className="text-[11px] text-[var(--text-muted)] leading-[1.6] m-0 font-normal">
                     {p.bio}
                   </p>
                 )}
@@ -121,7 +156,7 @@ export function HUD({
           {/* Bottom Left: Sitemap Panel OR Sliver */}
           {isCollapsed ? (
             <div
-              className="hud-panel pointer-events-auto px-3 py-1.5 flex items-center gap-1.5 shadow-xl cursor-pointer hover:bg-white/[0.08] active:scale-95 transition-all"
+              className="hud-panel pointer-events-auto px-3 py-1.5 flex items-center gap-1.5 shadow-xl cursor-pointer hover:opacity-85 active:scale-95 transition-all"
               style={{ borderRadius: 12 }}
               onClick={(e) => {
                 e.stopPropagation()
@@ -130,7 +165,7 @@ export function HUD({
               title="Expand Sitemap"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] opacity-80" />
-              <span className="mono text-[8.5px] tracking-[0.14em] text-[#888] font-medium">
+              <span className="mono text-[8.5px] tracking-[0.14em] text-[var(--text-secondary)] font-medium">
                 SITEMAP ▲
               </span>
             </div>
@@ -139,7 +174,7 @@ export function HUD({
               className="hud-panel pointer-events-auto p-2 flex flex-col gap-1 w-[130px] sm:w-[142px] shadow-2xl transition-all duration-200"
               style={{ borderRadius: 16, maxHeight: "calc(100vh - 180px)" }}
             >
-              <div className="mono text-[8px] tracking-[0.16em] text-[#555] px-1.5 py-0.5 font-medium">
+              <div className="mono text-[8px] tracking-[0.16em] text-[var(--text-subtle)] px-1.5 py-0.5 font-medium">
                 SITEMAP
               </div>
               <div className="flex flex-col gap-0.5 overflow-y-auto max-h-[230px] pr-0.5">
@@ -169,9 +204,35 @@ export function HUD({
           <div className="flex flex-col gap-1.5 items-end pointer-events-none">
             {/* Minimal Controls Row without background */}
             <div className="pointer-events-auto flex items-center justify-end gap-1.5 px-0.5">
+              {onToggleTheme && (
+                <button
+                  type="button"
+                  className="icon-btn !w-7 !h-7 rounded-full shadow-lg"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onToggleTheme()
+                  }}
+                  title={
+                    theme === "system"
+                      ? "Theme: Device Mode (Auto)"
+                      : theme === "light"
+                      ? "Theme: Light"
+                      : "Theme: Dark"
+                  }
+                  aria-label="Toggle Theme"
+                >
+                  {theme === "system" ? (
+                    <Monitor size={12} />
+                  ) : theme === "light" ? (
+                    <Sun size={12} />
+                  ) : (
+                    <Moon size={12} />
+                  )}
+                </button>
+              )}
               <button
                 type="button"
-                className="w-7 h-7 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-[#888] hover:text-[#eee] active:scale-95 transition-all shadow-lg cursor-pointer"
+                className="icon-btn !w-7 !h-7 rounded-full shadow-lg"
                 onClick={(e) => {
                   e.stopPropagation()
                   onZoomOut()
@@ -183,7 +244,7 @@ export function HUD({
               </button>
               <button
                 type="button"
-                className="w-7 h-7 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-[#888] hover:text-[#eee] active:scale-95 transition-all shadow-lg cursor-pointer"
+                className="icon-btn !w-7 !h-7 rounded-full shadow-lg"
                 onClick={(e) => {
                   e.stopPropagation()
                   onZoomIn()
@@ -195,7 +256,7 @@ export function HUD({
               </button>
               <button
                 type="button"
-                className="w-7 h-7 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-[#888] hover:text-[#eee] active:scale-95 transition-all shadow-lg cursor-pointer"
+                className="icon-btn !w-7 !h-7 rounded-full shadow-lg"
                 onClick={(e) => {
                   e.stopPropagation()
                   onFitAll()
@@ -207,11 +268,9 @@ export function HUD({
               </button>
               <button
                 type="button"
-                className={`w-7 h-7 rounded-full ${
-                  isPaused
-                    ? "bg-[#4ade80]/[0.2] text-[#4ade80] border-[#4ade80]/[0.4]"
-                    : "bg-white/[0.06] text-[#888] hover:text-[#eee] border-white/[0.08]"
-                } border flex items-center justify-center active:scale-95 transition-all shadow-lg cursor-pointer`}
+                className={`icon-btn !w-7 !h-7 rounded-full shadow-lg ${
+                  isPaused ? "active" : ""
+                }`}
                 onClick={(e) => {
                   e.stopPropagation()
                   onTogglePhysics()
@@ -230,7 +289,7 @@ export function HUD({
             {/* MiniMap Radar Box (hidden when in focus collapsed mode) */}
             {!isCollapsed && (
               <div
-                className="hud-panel pointer-events-auto p-2 flex flex-col items-center justify-center overflow-hidden w-[140px] sm:w-[160px] shadow-2xl !bg-black/60 !border-white/[0.14] transition-all duration-200"
+                className="hud-panel pointer-events-auto p-2 flex flex-col items-center justify-center overflow-hidden w-[140px] sm:w-[160px] shadow-2xl transition-all duration-200"
                 style={{ borderRadius: 16 }}
               >
                 <canvas
@@ -252,7 +311,7 @@ export function HUD({
           {/* Profile Card */}
           <div className="hud-panel p-4 flex flex-col">
             <div className="flex items-center gap-1.5 mb-2.5">
-              <span className="mono text-[9px] tracking-[0.16em] text-[#555555]">
+              <span className="mono text-[9px] tracking-[0.16em] text-[var(--text-subtle)] font-medium">
                 {profile.label || "PROFILE"}
               </span>
               <span
@@ -261,19 +320,19 @@ export function HUD({
               />
             </div>
 
-            <div className="text-[16px] sm:text-[17px] font-medium text-[#e5e5e5] leading-tight tracking-[-0.02em]">
+            <div className="text-[16px] sm:text-[17px] font-semibold text-[var(--text-primary)] leading-tight tracking-[-0.02em]">
               {p.name}
             </div>
-            <div className="mono text-[10px] text-[#737373] mt-1 font-normal">
+            <div className="mono text-[10px] text-[var(--text-secondary)] mt-1 font-normal">
               {p.title}
               {p.location && (
-                <span className="text-[#484848]"> · {p.location}</span>
+                <span className="text-[var(--text-subtle)]"> · {p.location}</span>
               )}
             </div>
 
-            <div className="h-[1px] bg-white/[0.06] my-3" />
+            <div className="h-[1px] bg-[var(--border-subtle)] my-3" />
 
-            <p className="text-[11px] text-[#666] leading-[1.65] m-0 font-normal">
+            <p className="text-[11px] text-[var(--text-muted)] leading-[1.65] m-0 font-normal">
               {p.bio}
             </p>
           </div>
@@ -282,7 +341,7 @@ export function HUD({
           <div className="flex-1 min-h-[12px]" />
 
           {/* Minimap */}
-          <div className="hud-panel p-2.5 flex flex-col items-center justify-center overflow-hidden !bg-black/60 !border-white/[0.14] shadow-2xl">
+          <div className="hud-panel p-2.5 flex flex-col items-center justify-center overflow-hidden shadow-2xl">
             <canvas
               ref={!isMobile ? minimapRef : undefined}
               className="w-full aspect-[16/8] rounded-lg block"
@@ -316,6 +375,29 @@ export function HUD({
               >
                 <Maximize2 size={12} strokeWidth={2.2} />
               </button>
+              {onToggleTheme && (
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={onToggleTheme}
+                  title={
+                    theme === "system"
+                      ? "Theme: Device Mode (Auto) [T]"
+                      : theme === "light"
+                      ? "Theme: Light [T]"
+                      : "Theme: Dark [T]"
+                  }
+                  aria-label="Toggle Theme"
+                >
+                  {theme === "system" ? (
+                    <Monitor size={13} />
+                  ) : theme === "light" ? (
+                    <Sun size={13} />
+                  ) : (
+                    <Moon size={13} />
+                  )}
+                </button>
+              )}
             </div>
             <button
               type="button"
@@ -338,7 +420,7 @@ export function HUD({
         <div className="hud-sidebar-right flex flex-col gap-2.5 w-[200px] sm:w-[220px] pointer-events-auto h-full">
           {/* Sitemap / Navigation Section */}
           <div className="hud-panel p-2.5 flex flex-col gap-1">
-            <div className="mono text-[9px] tracking-[0.16em] text-[#555] px-2 py-1">
+            <div className="mono text-[9px] tracking-[0.16em] text-[var(--text-subtle)] px-2 py-1 font-medium">
               NAVIGATE
             </div>
             {nodes.map((node) => (
@@ -366,30 +448,36 @@ export function HUD({
 
           {/* Shortcuts / Quick Navigation */}
           <div className="hud-panel p-2.5 flex flex-col gap-1.5">
-            <div className="mono text-[8.5px] tracking-[0.16em] text-[#555] px-1 font-medium">
+            <div className="mono text-[8.5px] tracking-[0.16em] text-[var(--text-subtle)] px-1 font-medium">
               SHORTCUTS
             </div>
-            <div className="flex flex-col gap-1 text-[9.5px] mono text-[#666]">
+            <div className="flex flex-col gap-1 text-[9.5px] mono text-[var(--text-secondary)]">
               <div className="flex items-center justify-between px-1">
-                <span className="text-[#888] bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                <span className="text-[var(--text-primary)] bg-[var(--icon-btn-bg)] px-1.5 py-0.5 rounded border border-[var(--icon-btn-border)]">
                   SPACE
                 </span>
                 <span>Pause Physics</span>
               </div>
               <div className="flex items-center justify-between px-1">
-                <span className="text-[#888] bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                <span className="text-[var(--text-primary)] bg-[var(--icon-btn-bg)] px-1.5 py-0.5 rounded border border-[var(--icon-btn-border)]">
                   F
                 </span>
                 <span>Fit All</span>
               </div>
               <div className="flex items-center justify-between px-1">
-                <span className="text-[#888] bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                <span className="text-[var(--text-primary)] bg-[var(--icon-btn-bg)] px-1.5 py-0.5 rounded border border-[var(--icon-btn-border)]">
+                  T
+                </span>
+                <span>Cycle Theme</span>
+              </div>
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[var(--text-primary)] bg-[var(--icon-btn-bg)] px-1.5 py-0.5 rounded border border-[var(--icon-btn-border)]">
                   DBL-CLICK
                 </span>
                 <span>Focus Node</span>
               </div>
               <div className="flex items-center justify-between px-1">
-                <span className="text-[#888] bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                <span className="text-[var(--text-primary)] bg-[var(--icon-btn-bg)] px-1.5 py-0.5 rounded border border-[var(--icon-btn-border)]">
                   + / −
                 </span>
                 <span>Zoom Step</span>

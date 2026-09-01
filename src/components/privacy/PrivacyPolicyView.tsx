@@ -66,13 +66,13 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
   if (!policy) {
     return (
       <div
-        className="fixed inset-0 w-full h-full bg-[#09090b] text-zinc-200 select-text overflow-y-auto overscroll-contain font-sans policy-scroll p-6 md:p-12 z-50 antialiased"
+        className="fixed inset-0 w-full h-full bg-slate-50 dark:bg-[#09090b] text-slate-800 dark:text-zinc-200 select-text overflow-y-auto overscroll-contain font-sans policy-scroll p-6 md:p-12 z-50 antialiased transition-colors duration-200"
         style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
       >
         <div className="max-w-2xl mx-auto py-16">
-          <div className="p-8 rounded-lg border border-zinc-800 bg-zinc-900/40 text-center">
-            <h1 className="text-xl font-semibold text-white mb-2">Privacy Policy Not Found</h1>
-            <p className="text-zinc-400 text-sm">
+          <div className="p-8 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/40 text-center shadow-sm">
+            <h1 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">Privacy Policy Not Found</h1>
+            <p className="text-slate-500 dark:text-zinc-400 text-sm">
               The requested privacy policy document could not be located.
             </p>
           </div>
@@ -94,23 +94,23 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
 
   return (
     <div
-      className="fixed inset-0 w-full h-full bg-[#09090b] text-zinc-200 select-text overflow-y-auto overscroll-contain font-sans policy-scroll z-50 antialiased print:static print:inset-auto print:w-full print:h-auto print:min-h-0 print:overflow-visible print:bg-white print:text-zinc-900 print:p-0"
+      className="fixed inset-0 w-full h-full bg-slate-50 dark:bg-[#09090b] text-slate-800 dark:text-zinc-200 select-text overflow-y-auto overscroll-contain font-sans policy-scroll z-50 antialiased transition-colors duration-200 print:static print:inset-auto print:w-full print:h-auto print:min-h-0 print:overflow-visible print:bg-white print:text-zinc-900 print:p-0"
       style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
     >
       {/* Clean, minimalist top bar */}
-      <header className="sticky top-0 z-40 bg-[#09090b]/90 backdrop-blur border-b border-zinc-800 px-4 md:px-8 py-3 flex items-center justify-between print:hidden">
+      <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#09090b]/90 backdrop-blur border-b border-slate-200 dark:border-zinc-800 px-4 md:px-8 py-3 flex items-center justify-between print:hidden">
         {/* Top-left breadcrumb: policy / name */}
         <div className="flex items-center gap-1.5 text-xs mono select-none">
-          <span className="text-zinc-500">policy</span>
-          <span className="text-zinc-600">/</span>
-          <span className="text-zinc-200 font-medium">{policy.slug}</span>
+          <span className="text-slate-400 dark:text-zinc-500">policy</span>
+          <span className="text-slate-300 dark:text-zinc-600">/</span>
+          <span className="text-slate-700 dark:text-zinc-200 font-medium">{policy.slug}</span>
         </div>
 
         <div className="flex items-center gap-2.5">
           {/* Language Switcher */}
           {availableLangs.length > 1 && (
-            <div className="flex items-center rounded border border-zinc-800 bg-zinc-900/60 p-0.5 text-xs">
-              <span className="pl-1.5 pr-1 text-zinc-500 flex items-center">
+            <div className="flex items-center rounded border border-slate-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/60 p-0.5 text-xs">
+              <span className="pl-1.5 pr-1 text-slate-400 dark:text-zinc-500 flex items-center">
                 <Globe size={12} />
               </span>
               {availableLangs.map((langKey) => (
@@ -119,8 +119,8 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
                   onClick={() => handleLangChange(langKey)}
                   className={`px-2 py-0.5 rounded uppercase text-[11px] font-medium transition-colors ${
                     selectedLang === langKey
-                      ? "bg-zinc-800 text-white shadow-sm"
-                      : "text-zinc-400 hover:text-zinc-200"
+                      ? "bg-slate-200 dark:bg-zinc-800 text-slate-900 dark:text-white shadow-sm"
+                      : "text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200"
                   }`}
                   style={selectedLang === langKey ? { color: accent } : undefined}
                 >
@@ -132,7 +132,7 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
 
           <button
             onClick={handleCopyLink}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-xs text-zinc-300 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-slate-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/60 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs text-slate-700 dark:text-zinc-300 transition-colors"
             title="Copy URL"
           >
             {copied ? (
@@ -149,7 +149,7 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
           </button>
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-xs text-zinc-300 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-slate-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/60 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs text-slate-700 dark:text-zinc-300 transition-colors"
             title="Print or Save as PDF"
           >
             <Printer size={13} />
@@ -163,7 +163,7 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
         {/* Document Title Header */}
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white print:text-black">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white print:text-black">
               {displayTitle}
             </h1>
             {policy.category && (
@@ -181,10 +181,10 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
           </div>
 
           {displayTagline && (
-            <p className="text-sm sm:text-base text-zinc-400 mb-3">{displayTagline}</p>
+            <p className="text-sm sm:text-base text-slate-600 dark:text-zinc-400 mb-3">{displayTagline}</p>
           )}
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-400 mt-3 pt-3 border-t border-zinc-800">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-zinc-400 mt-3 pt-3 border-t border-slate-200 dark:border-zinc-800">
             <span>Last updated: {policy.lastUpdated}</span>
             {policy.url && (
               <>
@@ -193,10 +193,10 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
                   href={policy.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-zinc-300 hover:text-white underline underline-offset-2 transition-colors break-all"
+                  className="inline-flex items-center gap-1 text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white underline underline-offset-2 transition-colors break-all"
                 >
                   <span>{policy.url}</span>
-                  <ExternalLink size={11} className="text-zinc-400 shrink-0" />
+                  <ExternalLink size={11} className="text-slate-400 dark:text-zinc-400 shrink-0" />
                 </a>
               </>
             )}
@@ -212,13 +212,13 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
         {/* Summary Block */}
         {displaySummary && (
           <div
-            className="p-4 rounded-r-md border border-zinc-800 border-l-4 text-zinc-300 text-sm leading-relaxed mb-8 print:border-zinc-300 print:bg-zinc-50 print:text-zinc-800 print:mb-6"
+            className="p-4 rounded-r-md border border-slate-200 dark:border-zinc-800 border-l-4 text-slate-700 dark:text-zinc-300 text-sm leading-relaxed mb-8 shadow-sm print:border-zinc-300 print:bg-zinc-50 print:text-zinc-800 print:mb-6"
             style={{
               borderLeftColor: accent,
               backgroundColor: hexToRgba(accent, 0.04),
             }}
           >
-            <p className="font-semibold text-zinc-200 mb-1 print:text-black" style={{ color: accent }}>
+            <p className="font-semibold text-slate-900 dark:text-zinc-200 mb-1 print:text-black" style={{ color: accent }}>
               Overview
             </p>
             <p>{displaySummary}</p>
@@ -229,12 +229,12 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
         <div className="space-y-8 print:space-y-6">
           {displaySections.map((section, idx) => (
             <section key={idx} className="space-y-3 print:space-y-2">
-              <h2 className="text-lg font-semibold text-white tracking-tight border-b border-zinc-800/80 pb-1.5 print:text-black print:border-zinc-300">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white tracking-tight border-b border-slate-200 dark:border-zinc-800/80 pb-1.5 print:text-black print:border-zinc-300">
                 {section.title}
               </h2>
 
               {section.content && (
-                <div className="text-zinc-300 text-sm sm:text-base leading-relaxed space-y-2 print:text-zinc-800">
+                <div className="text-slate-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed space-y-2 print:text-zinc-800">
                   {Array.isArray(section.content) ? (
                     section.content.map((c, ci) => (
                       <p key={ci}>{c}</p>
@@ -246,7 +246,7 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
               )}
 
               {section.list && section.list.length > 0 && (
-                <ul className="space-y-2 text-zinc-300 text-sm sm:text-base leading-relaxed pl-1 print:text-zinc-800">
+                <ul className="space-y-2 text-slate-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed pl-1 print:text-zinc-800">
                   {section.list.map((item, li) => (
                     <li key={li} className="flex items-start gap-2.5">
                       <span
@@ -263,7 +263,7 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
         </div>
 
         {/* Contact & Legal Footer */}
-        <footer className="mt-14 pt-6 border-t border-zinc-800 text-xs text-zinc-400 space-y-2 print:mt-8 print:pt-4 print:border-zinc-300 print:text-zinc-600">
+        <footer className="mt-14 pt-6 border-t border-slate-200 dark:border-zinc-800 text-xs text-slate-500 dark:text-zinc-400 space-y-2 print:mt-8 print:pt-4 print:border-zinc-300 print:text-zinc-600">
           <p>
             For questions or requests regarding this Privacy Policy, contact:{" "}
             <a
@@ -274,7 +274,7 @@ export function PrivacyPolicyView({ slug }: PrivacyPolicyViewProps) {
               {policy.contactEmail}
             </a>
           </p>
-          <p className="text-zinc-500 print:text-zinc-500">
+          <p className="text-slate-400 dark:text-zinc-500 print:text-zinc-500">
             &copy; {new Date().getFullYear()} {policy.publisher || policy.appName}. All rights reserved.
           </p>
         </footer>

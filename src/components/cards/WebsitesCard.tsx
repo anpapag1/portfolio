@@ -88,12 +88,12 @@ export function WebsitesCard({ node }: { node: NodeData }) {
             alignItems: "center",
             gap: 10,
             padding: "9px 0",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            borderBottom: "1px solid var(--border-subtle)",
             cursor: "pointer",
             textDecoration: "none",
             transition: "opacity 0.12s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.55")}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.65")}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
         >
           <span
@@ -108,17 +108,17 @@ export function WebsitesCard({ node }: { node: NodeData }) {
             <SiteIcon url={link.url} icon={link.icon} />
           </span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 12.5, color: "#c8c8c8", fontWeight: 500 }}>
+            <div style={{ fontSize: 12.5, color: "var(--text-primary)", fontWeight: 600 }}>
               {link.label}
             </div>
             <div
               className="mono"
-              style={{ fontSize: 9, color: "#484848", marginTop: 2 }}
+              style={{ fontSize: 9, color: "var(--text-secondary)", marginTop: 2 }}
             >
               {link.sub}
             </div>
           </div>
-          <span style={{ fontSize: 11, color: "#383838", flexShrink: 0 }}>
+          <span style={{ fontSize: 11, color: "var(--text-subtle)", flexShrink: 0 }}>
             ↗
           </span>
         </a>

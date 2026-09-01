@@ -17,9 +17,10 @@ export function SkillsCard({ node }: { node: NodeData }) {
             className="mono"
             style={{
               fontSize: 9,
-              color: "#ebe5e5",
+              color: "var(--text-secondary)",
               letterSpacing: "0.12em",
               marginBottom: 7,
+              fontWeight: 500,
             }}
           >
             {g.label.toUpperCase()}
