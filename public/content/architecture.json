@@ -1,0 +1,44 @@
+{
+  "system": "Portfolio 2D Physics Universe",
+  "version": "2.0.0",
+  "author": "Antonis Papageorgiou",
+  "engine": {
+    "type": "Verlet Integration",
+    "targetFps": 60,
+    "frictionDamping": 0.88,
+    "collisionPadding": 24,
+    "springConstant": 0.045,
+    "breakDistance": 620,
+    "repulsionStrength": 18000,
+    "maxVelocity": 18
+  },
+  "graph": {
+    "topology": "Dynamic Delaunay-like Spring Latching",
+    "renderPasses": [
+      {
+        "pass": 1,
+        "type": "Micro-glow blur bezier",
+        "filter": "blur(2.5px)",
+        "lineWidth": 4.5,
+        "alpha": 0.18
+      },
+      {
+        "pass": 2,
+        "type": "Core crisp gradient spline",
+        "lineWidth": 1.2,
+        "alpha": 0.65
+      }
+    ]
+  },
+  "viewport": {
+    "minZoom": 0.25,
+    "maxZoom": 2.4,
+    "interactiveZoomThreshold": 0.55,
+    "defaultFitPadding": 48
+  },
+  "themeEngine": {
+    "modes": ["system", "light", "dark"],
+    "defaultMode": "system",
+    "syncMediaListener": "prefers-color-scheme: dark"
+  }
+}

@@ -1,0 +1,23 @@
+========================================================================
+   ____  _______    __   _    _____   __  ____  ______
+  / __ \/ ____/ |  / /  | |  / /   | / / / / / /_  __/
+ / / / / __/  | | / /   | | / / /| |/ / / / /   / /   
+/ /_/ / /___  | |/ /    | |/ / ___ / /_/ / /___/ /    
+\____/_____/  |___/     |___/_/  |_\____/_____/_/     
+                                                      
+========================================================================
+
+Congratulations! You found the hidden Developer Vault.
+
+Build info:
+- Engine: 2D Spatial Verlet Physics
+- Framework: React 18 + Vite + TypeScript + Tailwind
+- Author: Antonis Papageorgiou (anpapag1)
+- Location: Greece
+- Keybinding: Triple-Tap [SPACE] to reveal / focus
+
+Feel free to download the design.md and architecture.json files to see
+how this portfolio is constructed under the hood.
+
+Happy coding!
+========================================================================

@@ -231,6 +231,51 @@
           }
         ]
       }
+    },
+    {
+      "id": "secret",
+      "label": "DEV VAULT",
+      "color": "#ec4899",
+      "width": 360,
+      "height": 430,
+      "secret": true,
+      "content": {
+        "title": "Developer Vault",
+        "subtitle": "System Blueprints & Design Docs",
+        "badge": "CLASSIFIED",
+        "desc": "Hidden developer vault containing portfolio architecture specs, physics engine documentation, and system internals.",
+        "files": [
+          {
+            "name": "design.md",
+            "filename": "design.md",
+            "url": "/content/design.md",
+            "size": "3.8 KB",
+            "ext": "MD",
+            "desc": "Complete portfolio architecture, physics engine & UI design system breakdown."
+          },
+          {
+            "name": "architecture.json",
+            "filename": "architecture.json",
+            "url": "/content/architecture.json",
+            "size": "1.9 KB",
+            "ext": "JSON",
+            "desc": "Graph node topology, spring constant specs & collision matrices."
+          },
+          {
+            "name": "easter_egg.txt",
+            "filename": "easter_egg.txt",
+            "url": "/content/easter_egg.txt",
+            "size": "650 B",
+            "ext": "TXT",
+            "desc": "Developer notes, build secrets, and ASCII signature."
+          }
+        ],
+        "stats": {
+          "engine": "Verlet Physics + Spring Graph",
+          "fps": "60 FPS Canvas",
+          "theme": "Dynamic 3-Way Semantic"
+        }
+      }
     }
   ]
 }

@@ -12,6 +12,7 @@ import { NodeCardContent } from "./components/cards/CardContent"
 import { VIEWPORT_CONFIG, MINIMAP_CONFIG, PHYSICS_CONFIG } from "./config"
 import { PrivacyPolicyView } from "./components/privacy/PrivacyPolicyView"
 import { PrivacyPolicyDirectory } from "./components/privacy/PrivacyPolicyDirectory"
+import { useTheme } from "./hooks/useTheme"
 
 
 function hexToRgb(hex: string) {
@@ -21,8 +22,10 @@ function hexToRgb(hex: string) {
   return `${r}, ${g}, ${b}`
 }
 
-function initBodies(): PhysicsBody[] {
-  const activeNodes = PORTFOLIO_NODES.filter((node) => node.id !== "profile")
+function initBodies(includeSecret = false): PhysicsBody[] {
+  const activeNodes = PORTFOLIO_NODES.filter(
+    (node) => node.id !== "profile" && (!node.secret || includeSecret),
+  )
   const N = activeNodes.length
   // Shuffle order so any card can land in any direction on every load
   const shuffledSlots = activeNodes
@@ -66,8 +69,12 @@ function initBodies(): PhysicsBody[] {
 }
 
 export default function App() {
+  const [isSecretUnlocked, setIsSecretUnlocked] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const spacePressTimestampsRef = useRef<number[]>([])
+
   // Physics & Canvas state in refs (60fps, no React re-renders)
-  const bodiesRef = useRef<PhysicsBody[]>(initBodies())
+  const bodiesRef = useRef<PhysicsBody[]>(initBodies(false))
   const bondsRef = useRef<Bond[]>([])
   const vpRef = useRef({ panX: 0, panY: 0, zoom: 1 })
   const targetVpRef = useRef<{
@@ -222,6 +229,9 @@ export default function App() {
     [updateTransform],
   )
 
+  // Theme state
+  const { theme, isDark, toggleTheme } = useTheme()
+
   // ── Minimap Renderer ─────────────────────────────────────────
   const drawMinimap = useCallback(() => {
     const canvas = minimapRef.current
@@ -291,7 +301,9 @@ export default function App() {
       const bBody = bodiesRef.current.find((b) => b.id === bond.b)
       if (!a || !bBody) continue
       ctx.beginPath()
-      ctx.strokeStyle = "rgba(255,255,255,0.22)"
+      ctx.strokeStyle = isDark
+        ? "rgba(255,255,255,0.22)"
+        : "rgba(0,0,0,0.18)"
       ctx.lineWidth = 1.0
       ctx.moveTo(toMapX(a.x), toMapY(a.y))
       ctx.lineTo(toMapX(bBody.x), toMapY(bBody.y))
@@ -309,7 +321,7 @@ export default function App() {
       ctx.beginPath()
       ctx.arc(mx, my, MINIMAP_CONFIG.nodeRadius + 2.5, 0, Math.PI * 2)
       ctx.fillStyle = node.color
-      ctx.globalAlpha = 0.28
+      ctx.globalAlpha = isDark ? 0.28 : 0.2
       ctx.fill()
 
       // Core vibrant dot
@@ -318,7 +330,7 @@ export default function App() {
       ctx.fillStyle = node.color
       ctx.globalAlpha = 1.0
       ctx.shadowColor = node.color
-      ctx.shadowBlur = 6
+      ctx.shadowBlur = isDark ? 6 : 4
       ctx.fill()
       ctx.shadowBlur = 0
     }
@@ -338,15 +350,15 @@ export default function App() {
     const rw = vWidth * scale
     const rh = vHeight * scale
     ctx.beginPath()
-    ctx.fillStyle = "rgba(255,255,255,0.12)"
-    ctx.strokeStyle = "rgba(255,255,255,0.38)"
+    ctx.fillStyle = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.06)"
+    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.38)" : "rgba(0,0,0,0.25)"
     ctx.lineWidth = 1.0
     ctx.roundRect(rx, ry, rw, rh, 3)
     ctx.fill()
     ctx.stroke()
 
     ctx.restore()
-  }, [])
+  }, [isDark])
 
   // ── Initialize on Mount ──────────────────────────────────────
   useEffect(() => {
@@ -730,6 +742,78 @@ export default function App() {
     )
   }, [zoomToward])
 
+  const toggleSecretNode = useCallback(() => {
+    const secretNode = PORTFOLIO_NODES.find((n) => n.id === "secret" || n.secret)
+    if (!secretNode) return
+
+    if (isSecretUnlocked) {
+      // Hide secret node cleanly
+      setIsSecretUnlocked(false)
+      bodiesRef.current = bodiesRef.current.filter((b) => b.id !== secretNode.id)
+      bondsRef.current = bondsRef.current.filter(
+        (b) => b.a !== secretNode.id && b.b !== secretNode.id,
+      )
+      setBonds([...bondsRef.current])
+
+      setToastMessage("🔒 DEV VAULT HIDDEN")
+      setTimeout(() => {
+        setToastMessage(null)
+      }, 2500)
+    } else {
+      // Reveal secret node
+      setIsSecretUnlocked(true)
+
+      let body = bodiesRef.current.find((b) => b.id === secretNode.id)
+      if (!body) {
+        const angle = Math.random() * Math.PI * 2
+        const radius = 50
+        const x = Math.cos(angle) * radius
+        const y = Math.sin(angle) * radius
+        const vx0 = Math.cos(angle) * 7.5
+        const vy0 = Math.sin(angle) * 7.5
+
+        body = {
+          id: secretNode.id,
+          x,
+          y,
+          px: x - vx0,
+          py: y - vy0,
+          ax: 0,
+          ay: 0,
+          vx: vx0,
+          vy: vy0,
+          mass: 1,
+          pinned: false,
+          dragging: false,
+          w: secretNode.width || 360,
+          h: secretNode.height || 430,
+        }
+        bodiesRef.current = [...bodiesRef.current, body]
+
+        const nextBonds = latchNodeNeighbors(
+          secretNode.id,
+          bodiesRef.current,
+          bondsRef.current,
+          PHYSICS_CONFIG,
+        )
+        bondsRef.current = nextBonds
+        setBonds([...nextBonds])
+      }
+
+      physicsActiveRef.current = true
+      setIsPaused(false)
+
+      setToastMessage("🔓 DEV VAULT UNLOCKED")
+      setTimeout(() => {
+        setToastMessage(null)
+      }, 3800)
+
+      setTimeout(() => {
+        focusNode(secretNode.id)
+      }, 120)
+    }
+  }, [isSecretUnlocked, focusNode])
+
   const togglePhysics = useCallback(() => {
     setIsHudCollapsed(false)
     const nextState = !physicsActiveRef.current
@@ -792,64 +876,57 @@ export default function App() {
 
       const touch = e.touches[0]
       const target = e.target as HTMLElement | null
-      const isInsideHud = !!target?.closest(".hud-panel, .nav-item")
-      if (isInsideHud) {
-        return
+      const cardEl = target?.closest(".node-card") as HTMLElement | null
+      let nodeId: string | null = null
+
+      if (cardEl) {
+        nodeEls.current.forEach((el, id) => {
+          if (el === cardEl) nodeId = id
+        })
       }
 
-      const isInsideInteractiveCard =
-        vpRef.current.zoom >= VIEWPORT_CONFIG.interactiveZoomThreshold &&
-        !!target?.closest("a, button, input, textarea, select, [role='button']")
-
-      if (isInsideInteractiveCard) {
-        return
-      }
-
-      setIsHudCollapsed(false)
-
-      const world = screenToWorld(touch.clientX, touch.clientY)
-      let hitId: string | null = null
-      for (const body of bodiesRef.current) {
-        if (
-          Math.abs(world.x - body.x) < body.w / 2 &&
-          Math.abs(world.y - body.y) < body.h / 2
-        ) {
-          hitId = body.id
-          break
+      if (nodeId) {
+        const body = bodiesRef.current.find((b) => b.id === nodeId)
+        if (body) {
+          const world = screenToWorld(touch.clientX, touch.clientY)
+          body.dragging = true
+          dragRef.current = {
+            id: nodeId,
+            ox: world.x - body.x,
+            oy: world.y - body.y,
+          }
+          touchRef.current = {
+            id: touch.identifier,
+            ox: touch.clientX,
+            oy: touch.clientY,
+          }
+          const el = nodeEls.current.get(nodeId)
+          if (el) {
+            el.classList.add("dragging")
+            el.style.zIndex = "30"
+          }
+          nodeEls.current.forEach((item, nid) => {
+            if (nid !== nodeId) item.style.zIndex = "10"
+          })
+          return
         }
       }
 
-      if (hitId) {
-        e.preventDefault()
-        const body = bodiesRef.current.find((b) => b.id === hitId)!
-        body.dragging = true
-        dragRef.current = {
-          id: hitId,
-          ox: world.x - body.x,
-          oy: world.y - body.y,
-        }
-        touchRef.current = {
-          id: touch.identifier,
-          ox: touch.clientX,
-          oy: touch.clientY,
-        }
-        const el = nodeEls.current.get(hitId)
-        if (el) {
-          el.classList.add("dragging")
-          el.style.zIndex = "30"
-        }
-      } else {
-        panRef.current = {
-          sx: touch.clientX,
-          sy: touch.clientY,
-          px: vpRef.current.panX,
-          py: vpRef.current.panY,
-        }
+      panRef.current = {
+        sx: touch.clientX,
+        sy: touch.clientY,
+        px: vpRef.current.panX,
+        py: vpRef.current.panY,
+      }
+      touchRef.current = {
+        id: touch.identifier,
+        ox: touch.clientX,
+        oy: touch.clientY,
       }
     }
 
     const handleNativeTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 2 && pinchRef.current) {
+      if (pinchRef.current && e.touches.length === 2) {
         e.preventDefault()
         const t0 = e.touches[0]
         const t1 = e.touches[1]
@@ -857,9 +934,13 @@ export default function App() {
           t1.clientX - t0.clientX,
           t1.clientY - t0.clientY,
         )
-        const { dist: prevDist, cx, cy } = pinchRef.current
-        zoomToward(vpRef.current.zoom * (dist / prevDist), cx, cy)
-        pinchRef.current = { dist, cx, cy }
+        const scale = dist / pinchRef.current.dist
+        pinchRef.current.dist = dist
+        zoomToward(
+          vpRef.current.zoom * scale,
+          pinchRef.current.cx,
+          pinchRef.current.cy,
+        )
         return
       }
 
@@ -982,15 +1063,27 @@ export default function App() {
         zoomOut()
       } else if (e.key.toLowerCase() === "f") {
         fitAll()
+      } else if (e.key.toLowerCase() === "t") {
+        toggleTheme()
       } else if (e.code === "Space") {
         e.preventDefault()
-        togglePhysics()
+        const now = Date.now()
+        const recent = spacePressTimestampsRef.current.filter((t) => now - t < 650)
+        recent.push(now)
+        spacePressTimestampsRef.current = recent
+
+        if (recent.length >= 3) {
+          spacePressTimestampsRef.current = []
+          toggleSecretNode()
+        } else {
+          togglePhysics()
+        }
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [zoomIn, zoomOut, fitAll, togglePhysics, isPrivacy])
+  }, [zoomIn, zoomOut, fitAll, togglePhysics, toggleTheme, toggleSecretNode, isPrivacy])
 
   const normalizedPath = pathname.replace(/\/+$/, "") || "/"
 
@@ -1006,8 +1099,8 @@ export default function App() {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 overflow-hidden"
-      style={{ background: "#0f0f0f", touchAction: "none" }}
+      className="absolute inset-0 overflow-hidden transition-colors duration-200"
+      style={{ background: "var(--bg-canvas)", touchAction: "none" }}
       onMouseDown={handleCanvasMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -1029,10 +1122,11 @@ export default function App() {
 
       {/* Radial vignette */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300"
         style={{
-          background:
-            "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 35%, rgba(10,10,10,0.7) 100%)",
+          background: isDark
+            ? "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 35%, rgba(10,10,10,0.7) 100%)"
+            : "radial-gradient(ellipse 85% 85% at 50% 50%, transparent 45%, rgba(0,0,0,0.06) 100%)",
           zIndex: 1,
         }}
       />
@@ -1049,10 +1143,19 @@ export default function App() {
           zIndex: 3,
         }}
       >
-        {PORTFOLIO_NODES.filter((n) => n.id !== "profile").map((node) => {
+        {PORTFOLIO_NODES.filter(
+          (n) => n.id !== "profile" && (!n.secret || isSecretUnlocked),
+        ).map((node) => {
           const body = bodiesRef.current.find((b) => b.id === node.id)
           const initX = body ? body.x - node.width / 2 : 0
           const initY = body ? body.y - node.height / 2 : 0
+          const cardBg = isDark
+            ? `rgba(${hexToRgb(node.color)}, .12)`
+            : `rgba(255, 255, 255, 0.88)`
+          const cardBorder = isDark
+            ? `rgba(${hexToRgb(node.color)}, .18)`
+            : `rgba(${hexToRgb(node.color)}, .35)`
+
           return (
             <div
               key={node.id}
@@ -1063,8 +1166,8 @@ export default function App() {
               style={{
                 width: node.width,
                 transform: `translate(${initX}px, ${initY}px)`,
-                background: `rgba(${hexToRgb(node.color)}, .12)`,
-                borderColor: `rgba(${hexToRgb(node.color)}, .1)`,
+                background: cardBg,
+                borderColor: cardBorder,
                 zIndex: 10,
               }}
               onMouseDown={(e) => handleNodeMouseDown(e, node.id)}
@@ -1079,16 +1182,42 @@ export default function App() {
         })}
       </div>
 
+      {/* Secret Node Unlock Toast */}
+      {toastMessage && (
+        <div
+          className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] pointer-events-none animate-in fade-in slide-in-from-top-4 duration-300"
+          style={{ touchAction: "none" }}
+        >
+          <div
+            className="mono px-4 py-2 rounded-full text-xs font-semibold shadow-2xl flex items-center gap-2 border"
+            style={{
+              background: "rgba(236, 72, 153, 0.95)",
+              color: "#ffffff",
+              borderColor: "rgba(255, 255, 255, 0.4)",
+              boxShadow: "0 0 25px rgba(236, 72, 153, 0.6)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+            {toastMessage}
+          </div>
+        </div>
+      )}
+
       {/* HUD overlay */}
       <div style={{ zIndex: 50, position: "relative" }}>
         <HUD
-          nodes={PORTFOLIO_NODES.filter((n) => n.id !== "profile")}
+          nodes={PORTFOLIO_NODES.filter(
+            (n) => n.id !== "profile" && (!n.secret || isSecretUnlocked),
+          )}
           profile={PORTFOLIO_NODES.find((n) => n.id === "profile")!}
           bonds={bonds}
           isPaused={isPaused}
+          theme={theme}
           isMobile={isMobile}
           isCollapsed={isHudCollapsed}
           onExpand={() => setIsHudCollapsed(false)}
+          onToggleTheme={toggleTheme}
           minimapRef={minimapRef}
           onFocusNode={(id) => focusNode(id)}
           onZoomIn={zoomIn}

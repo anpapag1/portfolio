@@ -6,7 +6,8 @@ export interface NodeData {
   color: string
   width: number
   height: number
-  type?: "skills" | "websites" | "projects" | "work" | "contact" | "profile" | string
+  type?: "skills" | "websites" | "projects" | "work" | "contact" | "profile" | "secret" | string
+  secret?: boolean
   content: any
 }
 

@@ -7,11 +7,16 @@ import { WorkCard } from "./WorkCard"
 import { EducationCard } from "./EducationCard"
 import { AwardsCard } from "./AwardsCard"
 import { ContactCard } from "./ContactCard"
+import { SecretCard } from "./SecretCard"
 import { GenericCard } from "./GenericCard"
 
 export function NodeCardContent({ node }: { node: NodeData }) {
   const kind = (node.type || node.id || "").toLowerCase()
   const c = node.content || {}
+
+  if (kind === "secret" || kind.includes("secret") || node.secret || Array.isArray(c.files)) {
+    return <SecretCard node={node} />
+  }
 
   if (kind === "profile" || kind.startsWith("profile") || c.name) {
     return <ProfileCard node={node} />
