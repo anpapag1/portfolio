@@ -65,13 +65,13 @@
             "label": "ER Tool",
             "url": "er.kommwtria.com",
             "sub": "3D printing order tracking tool",
-            "icon": "hotbed_logo.png"
+            "icon": "er_logo.png"
           },
           {
             "label": "Hotbed",
             "url": "hotbed.kommwtria.com",
             "sub": "ER diagram editor",
-            "icon": "er_logo.png"
+            "icon": "hotbed_logo.png"
           }
         ]
       }
